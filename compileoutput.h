@@ -12,6 +12,7 @@ public:
 public slots:
     bool runCompilation(QString path); // compile a file at a certain path
 
+    bool runParser(QString path);
 signals:
 };
 

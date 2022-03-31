@@ -8,15 +8,23 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets LinguistTools REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets LinguistTools REQUIRED)
 
+include_directories( gen )
+
+#here
+link_directories(gen)
+
 set(TS_FILES QIde_fr_FR.ts)
 
+set(PARSER_FILES java.l java.y)
+
 set(PROJECT_SOURCES
+        gen/java_lexer.c gen/java_parser.c gen/java_parser.h
         main.cpp
         mainwindow.h mainwindow.cpp menubar.cpp
         maindocument.h maindocument.cpp
@@ -24,8 +32,17 @@ set(PROJECT_SOURCES
         tabholder.h tabholder.cpp
         bottombar.h bottombar.cpp
         compileoutput.h compileoutput.cpp
-        ${TS_FILES}
+        ${TS_FILES} ${PARSER_FILES}
 )
+
+#set(ADD_PARSER ON)
+#if(${ADD_PARSER})
+#    add_custom_command(OUTPUT gen/parser.c gen/lexer.c
+#        COMMAND mkdir -p ${CMAKE_CURRENT_SOURCE_DIR}/gen
+#        COMMAND flex -o ${CMAKE_CURRENT_SOURCE_DIR}/gen/java_lexer.c ${CMAKE_CURRENT_SOURCE_DIR}/java.l
+#        COMMAND bison -o ${CMAKE_CURRENT_SOURCE_DIR}/gen/java_parser.c ${CMAKE_CURRENT_SOURCE_DIR}/java.y -d -v -Wcounterexamples)
+#    set(GENERATED_SOURCES gen/parser.c gen/lexer.c)
+#endif()
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(QIde

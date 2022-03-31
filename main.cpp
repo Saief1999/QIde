@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
-
+/*
     // START DARK THEME(Needs Tweaking) ------------------------------------------
     //     Force the style to be the same on all OSs:
         a.setStyle("Fusion");
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
 
         a.setPalette(palette);
-    // END DARK THEME ---------------------------------------------------------------
+    // END DARK THEME ---------------------------------------------------------------*/
 
     MainWindow w;
     w.show();
