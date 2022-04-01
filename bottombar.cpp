@@ -14,5 +14,6 @@ Bottombar::Bottombar(QWidget *parent)
 
 void Bottombar::compileRequest(QString path) {
     this->setVisible(true);
+    this->compileOutput->setText("");
     this->compileOutput->runCompilation(path);
 }

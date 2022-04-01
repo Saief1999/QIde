@@ -12,20 +12,18 @@
 <context>
     <name>CompileOutput</name>
     <message>
-        <location filename="compileoutput.cpp" line="20"/>
+        <location filename="compileoutput.cpp" line="22"/>
         <source>
 &lt;span style=&quot;color:red&quot;&gt;**Build failed**&lt;/span&gt;</source>
-        <oldsource>&lt;/br&gt;&lt;span style=&quot;color:red&quot;&gt;**Build failed**&lt;/span&gt;</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="compileoutput.cpp" line="28"/>
+        <location filename="compileoutput.cpp" line="30"/>
         <source>&lt;span style=&quot;color:green&quot;&gt;**Build is successful**&lt;/span&gt;</source>
-        <oldsource>&lt;span style=&quot;color:green&quot;&gt;**Build is successful**&lt;/span&gt;&quot;&quot;</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="compileoutput.cpp" line="40"/>
+        <location filename="compileoutput.cpp" line="42"/>
         <source>Blocking Error</source>
         <translation type="unfinished"></translation>
     </message>

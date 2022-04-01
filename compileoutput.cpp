@@ -1,12 +1,14 @@
 #include "compileoutput.h"
 #include <QDebug>
 #include <cstdio>
-#include "gen/java_lexer.c"
-#include "gen/java_parser.c"
-extern FILE* yyin;
-extern FILE* yyout;
-
-constexpr int  MAX_ERR_SIZE = 1<<20;
+extern "C"
+{
+#include "gen/java_parser.h"
+#include "gen/java_lexer.h"
+extern bool build_success;
+void reset_all();
+}
+constexpr int  MAX_ERR_SIZE = 1<<20,MAX_ERR_LINE=256;
 
 CompileOutput::CompileOutput(QWidget *parent)
     : QTextEdit{parent}
@@ -17,7 +19,7 @@ CompileOutput::CompileOutput(QWidget *parent)
 bool CompileOutput::runCompilation(QString path) {
     if(!runParser(path))
     {
-        setMarkdown(toPlainText()+tr(R"(
+        setMarkdown(toMarkdown()+tr(R"(
 <span style="color:red">**Build failed**</span>)"));
         return false;
     }
@@ -53,8 +55,11 @@ bool CompileOutput::runCompilation(QString path) {
 */
 bool CompileOutput::runParser(QString path)
 {
+    setMarkdown("");
     FILE *file=fopen(path.toStdString().c_str(),"r"),*tmpFile=tmpfile64();
-    char errOut[MAX_ERR_SIZE];
+    static char errOut[MAX_ERR_SIZE],errLine[MAX_ERR_LINE];
+    char*errPtr=errOut;
+    errOut[0]=0;
     if(file && tmpFile)
     {
         yyin=file;
@@ -63,9 +68,13 @@ bool CompileOutput::runParser(QString path)
         bool err=build_success;
         reset_all();
         qDebug() << "Finished Parsing";
-        rewind(yyout);
-        fgets(errOut,MAX_ERR_SIZE,yyout);
-        setText(errOut);
+        rewind(yyout);        
+        while(fgets(errLine,MAX_ERR_LINE,yyout))
+        {
+            strcat(errOut,errLine);
+            strcat(errOut,"\n");
+        }
+        setMarkdown(errOut);
         yylex_destroy();
         return err;
     }
