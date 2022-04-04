@@ -1,4 +1,3 @@
-
 %x comment
 %x array_comment
 %x array
@@ -246,3 +245,4 @@ false return FALSE;
 
 
 int yywrap(){}
+//GG

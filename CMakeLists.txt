@@ -23,7 +23,7 @@ link_directories(gen)
 
 add_custom_command(OUTPUT gen
         COMMAND mkdir -p gen
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Create gen directory")
 
 add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/gen/java_lexer.c ${CMAKE_SOURCE_DIR}/gen/java_lexer.h
