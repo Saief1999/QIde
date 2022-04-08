@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 
-project(QIde VERSION 0.1 LANGUAGES CXX)
-
+project(QIde VERSION 0.1 LANGUAGES CXX C)
+set(CMAKE_PREFIX_PATH "/home/ramizouari/Qt/6.2.3/gcc_64/lib/cmake")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOUIC ON)
@@ -10,6 +10,8 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED  ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets LinguistTools REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets LinguistTools REQUIRED)
@@ -19,12 +21,26 @@ include_directories( gen )
 #here
 link_directories(gen)
 
+add_custom_command(OUTPUT gen
+        COMMAND mkdir -p gen
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Create gen directory")
+
+add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/gen/java_lexer.c ${CMAKE_SOURCE_DIR}/gen/java_lexer.h
+        COMMAND flex -o gen/java_lexer.c --header-file=gen/java_lexer.h java.l
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        COMMENT "Generate java lexer")
+
+add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/gen/java_parser.c ${CMAKE_SOURCE_DIR}/gen/java_parser.h ${CMAKE_SOURCE_DIR}/gen/java_parser.output
+        COMMAND bison -o gen/java_parser.c java.y -d -v -Wcounterexamples
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        COMMENT "Generate java parser")
+
 set(TS_FILES QIde_fr_FR.ts)
 
-set(PARSER_FILES java.l java.y)
+set(GENERATED_SOURCES gen/java_lexer.c gen/java_parser.c gen/java_parser.h gen/java_lexer.h)
 
 set(PROJECT_SOURCES
-        gen/java_lexer.c gen/java_parser.c gen/java_parser.h
         main.cpp
         mainwindow.h mainwindow.cpp menubar.cpp
         maindocument.h maindocument.cpp
@@ -32,7 +48,7 @@ set(PROJECT_SOURCES
         tabholder.h tabholder.cpp
         bottombar.h bottombar.cpp
         compileoutput.h compileoutput.cpp
-        ${TS_FILES} ${PARSER_FILES}
+        ${TS_FILES}
 )
 
 #set(ADD_PARSER ON)
@@ -47,7 +63,7 @@ set(PROJECT_SOURCES
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(QIde
         MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
+        ${PROJECT_SOURCES} ${GENERATED_SOURCES}
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET QIde APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

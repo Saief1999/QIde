@@ -7,21 +7,38 @@
 %{
     #include <stdbool.h>
     #include <stdio.h>
+    #include <string.h>
+    #include <ctype.h>
+    #include "java_lexer.h"
+    extern bool build_success;
+
 %}
 %locations
 %define parse.trace
+/*
+    error handling will be done manually
+*/
 %define parse.error custom
+/*
+    improves error handling
+*/
 %define parse.lac full
 %token  ID CHARACTER STRING INCREMENT DECREMENT INTEGER REAL CLASS ARRAY RETURN INTERFACE
 %token ABSTRACT STATIC EXTENDS IMPLEMENTS;
 %token IF ELSE FOR WHILE DO SWITCH CASE DEFAULT
 %token LEFT_SHIFT RIGHT_SHIFT UNSIGNED_RIGHT_SHIFT
 %token LEQ GEQ NEQ EQ
+/*
+    Right Associative tokens having the same priority (lowest priority is on top)
+*/
 %right SELF_UNSIGNED_RIGHT_SHIFT SELF_LEFT_SHIFT SELF_RIGHT_SHIFT
 %token INSTANCEOF MORE_ARGS NEW
 %token LOGICAL_AND LOGICAL_OR TRUE FALSE
 %token PACKAGE IMPORT
 %right SELF_PLUS SELF_MINUS SELF_DIV SELF_MOD SELF_TIMES SELF_BITWISE_AND SELF_BITWISE_OR SELF_BITWISE_XOR
+/*
+    Left Associative tokens having the same priority 
+*/
 %left LOGICAL_AND LOGICAL_OR
 %left '^' '|'
 %left '&'
@@ -35,9 +52,11 @@
 %nonassoc PUBLIC PRIVATE PROTECTED
 %start start
 
-
+/*
+   By default the first rule is executed ( or we can use "%start start")
+*/
 %%
-start : main_program {printf("GJ\n");}; 
+start : main_program {printf("Program parsed successfully.\n");}; 
 /*
 nested id is of the form of ID1.ID2.ID3...
 */
@@ -51,7 +70,7 @@ var : ID opt_array opt_var_access;
 type denotes anything that can be a type
 */
 type : nested_id opt_array_type;
-opt_array_type: ARRAY opt_array_type |;
+opt_array_type: ARRAY opt_array_type |; 
 opt_array: '[' expression ']' opt_array | ;
 
 
@@ -118,6 +137,7 @@ New expression is an expression having the new operator
 */
 new_expression: NEW nested_id new_initialisation;
 new_initialisation: '(' args ')' | '['expression ']' opt_array opt_array_type  | ARRAY opt_array_type '{' args '}';
+
 
 /*Expression that can be assigned to a variable, or returned*/
 assignable_expression :  new_expression | expression
@@ -356,7 +376,7 @@ yyreport_syntax_error (const yypcontext_t *ctx)
         {
             format_err(flag,expected[i],false);
             if(i==0)
-                fprintf (yyout, "\n%32s %s", "expecting" , flag);
+                fprintf (yyout, "\n%s %s", "expecting" , flag);
             else fprintf(yyout, " or %s",flag);
         }
       }

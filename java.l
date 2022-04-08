@@ -1,18 +1,35 @@
+%x comment
+%x array_comment
+%x array
 %{
 #include "java_parser.h"
 #include <stdio.h>
+#include <stdbool.h>
+
 #define MAX_LEN 256
+/*
+* To store erros message
+*/
 char err_msg[MAX_LEN];
 #define BUILD_ERR_MAX_LEN (1<<20)
+
+/*
+* Comprehensive list of build errors
+*/
 char err_build_msg[BUILD_ERR_MAX_LEN];
+/*
+* Indicate whether the build is successful or not
+*/
 bool build_success=true;
+
 #ifndef NULL
 #define NULL 0
 #endif
 
 
  void yyerror (char const *s) {
-   fprintf (stderr, "%s\n", s);
+     build_success=false;
+   fprintf (yyout, "%s\n", s);
  }
 
 char convert_escape_representation(char c)
@@ -73,17 +90,18 @@ octal 0[0-7]*[lL]?
 hexadecimal 0[xX][0-9a-fA-F]+[lL]?
 real {numeric}+(\.{numeric}*)?(e{numeric}+)?[dDfF]?|\.{numeric}+(e{numeric}+)?[dDfF]?|{numeric}+(e{numeric}+)?[dDfF]
 integer {decimal}|{binary}|{octal}|{hexadecimal}
-number {real}|{integer}
 common_alphabet [^"'\n]
 string_alphabet {common_alphabet}|\\\"|\'
 char_alphabet {common_alphabet}|\\\'|\"
 spacing [ \t\n]
 id ({alpha}|_)({alpha_num}|_)*
+
 line_comment \/\/.+
-alphabet (.\n)
 multi_line_comment \/\*([^*]*|\*[^/]+)*\*\/
 array_type \[{spacing}*\]
 %%
+
+
 "++"    return INCREMENT;
 "--"    return DECREMENT;
 if  return IF;
@@ -135,13 +153,16 @@ false return FALSE;
 "&=" return SELF_BITWISE_AND;
 "|=" return SELF_BITWISE_OR;
 "^=" return SELF_BITWISE_XOR;
-{array_type} return ARRAY;
+
+
+
+
 {decimal} yylval.num=strtol(yytext,NULL,10);return INTEGER;
 {octal} yylval.num=strtol(yytext+1,NULL,8);return INTEGER;
 {hexadecimal} yylval.num=strtol(yytext+2,NULL,16); return INTEGER;
 {binary} yylval.num=strtol(yytext+2,NULL,2); return INTEGER;
 {real} yylval.real=strtod(yytext,NULL); return REAL;
-[0-9]{id} {
+[0-9]+{id} {
     strcpy(err_msg,yytext);
     sprintf(err_msg,"Illegal identifier '%s' at line %d",yytext,yylineno);
     yyerror(err_msg);
@@ -155,6 +176,7 @@ false return FALSE;
     for(int i=0;i<m;i++)
         if(yylval.text[i]=='\n')
             yylineno++;
+            
     return STRING;   
 }
 \'{char_alphabet}\' {
@@ -165,22 +187,62 @@ false return FALSE;
     yylval.character=convert_escape_representation(yytext[1]);
     return CHARACTER;
 }
+
+{line_comment}
+
+"/*"                            {BEGIN(comment);}
+<comment,array_comment>[^*\n]                 /* skip everything that's not "*" */
+<comment,array_comment>"*"+[^*/\n]*           /* eat up ’*’s not followed by ’/’s */
+<comment,array_comment>"\n"                   yylineno++; /* skip (we can use this to count the number of lines later) */
+<comment>"*"+"/"                {BEGIN(INITIAL);/*return to the main routine*/}
+<comment,array_comment><<EOF>>                {
+                                    sprintf(err_msg,"Illegal comment on line %d\n",yylineno);
+                                    yyerror(err_msg);
+                                    return YYerror;
+                                }
+<array_comment>"*"+"/"          BEGIN(array);
+
+
+\[                             {   BEGIN(array);}
+<array>\n                     {   yylineno++;   }
+<array>[ \t]+
+<array>\]                      {   BEGIN(INITIAL); return ARRAY; }
+<array>\/\*                     {   BEGIN(array_comment);}
+<array>{line_comment}
+<array>.                  {
+                                    BEGIN(INITIAL);
+                                    unput(yytext[0]);
+                                    return '[';
+                                }
+<array><<EOF>>                  { 
+                                    sprintf(err_msg,"unexpected end of file near line %d\n",yylineno);
+                                    yyerror(err_msg);
+                                    return YYerror;
+                                }
+
 [+\-*/%{}()\[\]<>|&~=;.,^:] return yytext[0];
 [ \t]+
 \n yylineno++;
-{line_comment}|{multi_line_comment} {
-    int m=strlen(yytext);
-    for(int i=0;i<m;i++)
-        if(yytext[i]=='\n')
-            yylineno++;
-}
+
+
 
 . {
-    strcpy(err_msg,yytext);
     sprintf(err_msg,"Illegal character %s at line %d",yytext,yylineno);
     yyerror(err_msg);
     return YYerror;
 }
 %% 
 
+
+/*{line_comment}|{multi_line_comment} {
+    int m=strlen(yytext);
+    for(int i=0;i<m;i++)
+        if(yytext[i]=='\n')
+            yylineno++;
+            
+}
+*/
+
+
 int yywrap(){}
+//GG
