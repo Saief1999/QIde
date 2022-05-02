@@ -19,7 +19,7 @@ It's possible to run The Core application as a standalone. For more instructions
 
 - The syntax scanner is written in `bison`. Based on a minified version of the java Grammar
 
-- The semantic analysis uses a `symbol table` : a `list` of `hashmap` ( each represeting a scope ). Check the source code for more info
+- The semantic analysis uses a `symbol table` : a `list` of `hashmap` ( each represeting a scope ). Check the [source code](./QIde-core) for more info
 
 ### GUI
 
