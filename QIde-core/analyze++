@@ -1,0 +1,5 @@
+#!/bin/bash
+
+flex -o java_lexer.cc java_lexer.ll
+bison -o java_parser.cc java_parser.yy # -d is not necessary since we added "%defines" to the .yy file
+g++ -std=c++14 main.cc driver.cc java_parser.cc java_lexer.cc -o javacompiler

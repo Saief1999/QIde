@@ -1,69 +1,75 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.5)
 
-project(QIde VERSION 0.1 LANGUAGES CXX C)
-set(CMAKE_PREFIX_PATH "/home/ramizouari/Qt/6.2.3/gcc_64/lib/cmake")
+project(QIde VERSION 0.1 LANGUAGES CXX)
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_STANDARD_REQUIRED  ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets LinguistTools REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets LinguistTools REQUIRED)
 
-include_directories( gen )
+# Core Module Configuration START
 
-#here
-link_directories(gen)
+set(LEX flex)
 
-add_custom_command(OUTPUT gen
-        COMMAND mkdir -p gen
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Create gen directory")
+set(YACC bison)
 
-add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/gen/java_lexer.c ${CMAKE_SOURCE_DIR}/gen/java_lexer.h
-        COMMAND flex -o gen/java_lexer.c --header-file=gen/java_lexer.h java.l
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-        COMMENT "Generate java lexer")
+set(CORE_DIR ${CMAKE_SOURCE_DIR}/QIde-core)
 
-add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/gen/java_parser.c ${CMAKE_SOURCE_DIR}/gen/java_parser.h ${CMAKE_SOURCE_DIR}/gen/java_parser.output
-        COMMAND bison -o gen/java_parser.c java.y -d -v -Wcounterexamples
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+include_directories( QIde-core )
+
+link_directories( QIde-core )
+
+add_custom_command(OUTPUT ${CORE_DIR}/java_parser.cc ${CORE_DIR}/java_parser.hh ${CORE_DIR}/location.hh
+        COMMAND ${YACC} -o java_parser.cc java_parser.yy
+        WORKING_DIRECTORY "${CORE_DIR}"
         COMMENT "Generate java parser")
 
-set(TS_FILES QIde_fr_FR.ts)
+add_custom_command(OUTPUT ${CORE_DIR}/java_lexer.cc
+        COMMAND ${LEX} -o java_lexer.cc java_lexer.ll
+        WORKING_DIRECTORY "${CORE_DIR}"
+        COMMENT "Generate java lexer")
 
-set(GENERATED_SOURCES gen/java_lexer.c gen/java_parser.c gen/java_parser.h gen/java_lexer.h)
-
-set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.h mainwindow.cpp menubar.cpp
-        maindocument.h maindocument.cpp
-        sidebar.h sidebar.cpp
-        tabholder.h tabholder.cpp
-        bottombar.h bottombar.cpp
-        compileoutput.h compileoutput.cpp
-        ${TS_FILES}
+set(CORE_SOURCES
+        QIde-core/java_lexer.cc QIde-core/java_lexer.hh
+        QIde-core/java_parser.cc QIde-core/java_parser.hh
+        QIde-core/driver.cc QIde-core/driver.hh
+        QIde-core/java_semantics.cc QIde-core/java_semantics.hh
+        QIde-core/utils.hh
+        QIde-core/location.hh # generated
 )
 
-#set(ADD_PARSER ON)
-#if(${ADD_PARSER})
-#    add_custom_command(OUTPUT gen/parser.c gen/lexer.c
-#        COMMAND mkdir -p ${CMAKE_CURRENT_SOURCE_DIR}/gen
-#        COMMAND flex -o ${CMAKE_CURRENT_SOURCE_DIR}/gen/java_lexer.c ${CMAKE_CURRENT_SOURCE_DIR}/java.l
-#        COMMAND bison -o ${CMAKE_CURRENT_SOURCE_DIR}/gen/java_parser.c ${CMAKE_CURRENT_SOURCE_DIR}/java.y -d -v -Wcounterexamples)
-#    set(GENERATED_SOURCES gen/parser.c gen/lexer.c)
-#endif()
+
+# Core Module Configuration END
+
+set(TS_FILES QIde-gui/QIde_fr_FR.ts)
+
+set(GUI_SOURCES
+        QIde-gui/main.cpp
+        QIde-gui/mainwindow.h QIde-gui/mainwindow.cpp QIde-gui/menubar.cpp
+        QIde-gui/maindocument.h QIde-gui/maindocument.cpp
+        QIde-gui/sidebar.h QIde-gui/sidebar.cpp
+        QIde-gui/tabholder.h QIde-gui/tabholder.cpp
+        QIde-gui/bottombar.h QIde-gui/bottombar.cpp
+        QIde-gui/compileoutput.h QIde-gui/compileoutput.cpp
+        ${TS_FILES}
+    )
+
+set(PROJECT_SOURCES
+        ${GUI_SOURCES}
+        ${CORE_SOURCES}
+)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(QIde
         MANUAL_FINALIZATION
-        ${PROJECT_SOURCES} ${GENERATED_SOURCES}
+        ${PROJECT_SOURCES}
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET QIde APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
