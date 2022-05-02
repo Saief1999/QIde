@@ -24,8 +24,11 @@ bool CompileOutput::runCompilation(QString path) {
 
     bool result = false;
 
+    QStringList parts = path.split("/");
+    std::string filename = parts.at(parts.size()-1).toStdString();
 
     std::string filepath = path.toStdString();
+
     std::fstream infile(filepath);
 
     if (!infile.good()) {
@@ -34,7 +37,7 @@ bool CompileOutput::runCompilation(QString path) {
     }
 
     try {
-        result = driver.parse_stream(infile, filepath);
+        result = driver.parse_stream(infile, filename);
     }
     catch(...) {
         return 0;
