@@ -10,25 +10,6 @@
     </message>
 </context>
 <context>
-    <name>CompileOutput</name>
-    <message>
-        <location filename="compileoutput.cpp" line="22"/>
-        <source>
-&lt;span style=&quot;color:red&quot;&gt;**Build failed**&lt;/span&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="compileoutput.cpp" line="30"/>
-        <source>&lt;span style=&quot;color:green&quot;&gt;**Build is successful**&lt;/span&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="compileoutput.cpp" line="42"/>
-        <source>Blocking Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>MainDocument</name>
     <message>
         <location filename="maindocument.cpp" line="59"/>
