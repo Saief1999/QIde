@@ -2,11 +2,13 @@
 
 This directory contains the core functionalities of the **Java Compiler**. Written with `flex`( lexical scanner ) and `bison` ( syntax analyzer ). Look at the next section If you want to compile from source ( if you want to run the compiler without the UI )
 
-## Usage
+## Usage (as a standalone application)
 
 ### Compiling sources
 
 You can use one of the two methods listed below. Note that both will generate a `javacompiler` binary. That's your entry point to the application
+
+Note that you'll only have access to the core compiler ( No GUI ). If you want to use the GUI run the entire project ( through `CMakeLists.txt` )
 
 #### Using the makefile
 
