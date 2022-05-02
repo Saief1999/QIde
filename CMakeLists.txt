@@ -42,7 +42,9 @@ set(CORE_SOURCES
         QIde-core/driver.cc QIde-core/driver.hh
         QIde-core/java_semantics.cc QIde-core/java_semantics.hh
         QIde-core/utils.hh
-        QIde-core/location.hh # generated
+        QIde-core/location.hh
+        QIde-core/java_lexer.ll
+        QIde-core/java_parser.yy
 )
 
 
