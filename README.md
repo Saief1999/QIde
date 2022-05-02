@@ -25,6 +25,31 @@ It's possible to run The Core application as a standalone. For more instructions
 
 The `QIde-gui` represents the Gui application. The Gui is written entirely in Qt 6 and Qt Widgets. No Ui files have been used in the process ( meaning all the components are written as code, offering more flexibility). For more information check [The Gui README](./QIde-gui/README.md)
 
+
+
+## Usage 
+
+The entire project is built with `cmake `(linking the core and the gui sources). 
+
+To compile from source start by running 
+
+```bash
+cmake .
+```
+
+This will generate some build files. Based on your system and on the available **Build system Generator** the next command might differ. If you're using `make` as a build generator ( changed in the cmake config ) then simply run
+
+```bash
+make
+```
+
+This will generate a binary `QIde`. That's your **entry point** to the Gui application. Then execute
+
+```bash
+./QIde
+```
+
+
 ## TODO
 
 > Errors are shown on terminal for now. We need to save them in a data structure ( that's also shared by the gui ) in order to make the gui display possible.
