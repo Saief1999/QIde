@@ -61,12 +61,15 @@ set(GUI_SOURCES
         QIde-gui/bottombar.h QIde-gui/bottombar.cpp
         QIde-gui/compileoutput.h QIde-gui/compileoutput.cpp
         ${TS_FILES}
-    )
+        QIde-gui/syntax/JavaHighlighter.cpp QIde-gui/syntax/JavaHighlighter.h)
 
 set(PROJECT_SOURCES
         ${GUI_SOURCES}
         ${CORE_SOURCES}
 )
+
+file(COPY ${PROJECT_SOURCE_DIR}/QIde-gui/syntax/keywords DESTINATION ${PROJECT_BINARY_DIR})
+
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(QIde

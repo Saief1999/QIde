@@ -2,6 +2,7 @@
 #define MAINDOCUMENT_H
 
 #include <QtWidgets>
+#include <QSyntaxHighlighter>
 
 
 class MainDocument : public QTextEdit
@@ -28,6 +29,7 @@ public slots:
 private:
     QString title;
     QString path;
+    QSyntaxHighlighter *highlighter;
     bool saveFile(QString path);
 
 signals:

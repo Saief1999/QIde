@@ -1,8 +1,10 @@
 #include "maindocument.h"
+#include "syntax/JavaHighlighter.h"
 
 MainDocument::MainDocument(QWidget *parent)
     : QTextEdit{parent},title(""),path("")
 {
+    highlighter = new syntax::JavaHighlighter(this->document());
     connect(this->document(), &QTextDocument::modificationChanged, this, &MainDocument::documentWasModified);
 }
 
