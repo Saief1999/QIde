@@ -34,12 +34,22 @@ The entire project is built with `cmake `(linking the core and the gui sources).
 To compile from source start by running 
 
 ```bash
-cmake .
+cmake . -B build
 ```
+
+---
+### Note
+
+If there is an issue with Qt not being found, do one of the following:
+- Add `QT_DIR`  as an environment variable and call cmake again
+- Or, you can call cmake with the following additional argument `-DCMAKE_PREFIX_PATH=/path/to/qt/gcc`, or any other compiler used by cmake
+
+---
 
 This will generate some build files. Based on your system and on the available **Build system Generator** the next command might differ. If you're using `make` as a build generator ( changed in the cmake config ) then simply run
 
 ```bash
+cd build
 make
 ```
 

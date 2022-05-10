@@ -9,6 +9,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     syntax::JavaHighlighter::initKeywords("keywords");
+    syntax::JavaHighlighter::initDefaultClasses("defaultClasses");
+    syntax::JavaHighlighter::initDefaultInterfaces("defaultInterfaces");
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
     for (const QString &locale : uiLanguages) {

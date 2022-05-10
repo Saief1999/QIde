@@ -16,6 +16,7 @@ bool Driver::parse_stream(std::istream& in, const std::string& sname)
     streamname = sname;
 
     JavaLexer lexer(&in);
+
     this->lexer = &lexer;
 
     JavaParser parser(*this);

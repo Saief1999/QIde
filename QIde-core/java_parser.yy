@@ -201,6 +201,7 @@ var : ID {
     } 
     opt_array opt_var_access {
     // Midrule actions count as a rule too , they can even have a return value (that's why we jumped '$2')...
+    /*God bless you for that comment*/
     strcpy($$, (std::string($1)+std::string($3) + std::string($4)).c_str());
 };
 /*
