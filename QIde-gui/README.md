@@ -9,3 +9,5 @@ This directory contains the GUI functionalities of the Compiler. Basically a ful
 - Multi Tabs
 
 - File Tree for easy access
+
+- Syntax Highlighting

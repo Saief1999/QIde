@@ -4,6 +4,8 @@
 #include "QIde-core/driver.hh"
 #include <iostream>
 #include <fstream>
+#include "error-handling/gui_error_handler.hh"
+
 //extern "C"
 //{
 //#include "gen/java_parser.h"
@@ -20,7 +22,11 @@ CompileOutput::CompileOutput(QWidget *parent)
 }
 
 bool CompileOutput::runCompilation(QString path) {
-    javacompiler::Driver driver;
+
+
+    javacompiler::GuiErrorHandler errorHandler;
+    errorHandler.setTextEdit(*this);
+    javacompiler::Driver driver(errorHandler);
 
     bool result = false;
 

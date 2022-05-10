@@ -7,7 +7,7 @@ YACC = bison
 CXXFLAGS = -W -Wall -Wextra -ansi -g -std=c++17
 
 # We need to add the header files to the list of files to be compiled
-HEADERS = driver.hh java_parser.hh java_lexer.hh location.hh utils.hh java_semantics.hh
+HEADERS = driver.hh java_parser.hh java_lexer.hh location.hh utils.hh java_semantics.hh error_handler.hh cli_error_handler.hh 
     
 
 all: javacompiler
@@ -28,8 +28,8 @@ java_lexer.cc: java_lexer.ll
 
 # Link executable
 
-javacompiler: java_parser.o java_lexer.o main.o driver.o java_semantics.o
-	$(CXX) -o $@ main.o java_parser.o java_lexer.o driver.o java_semantics.o
+javacompiler: java_parser.o java_lexer.o cli_error_handler.o main.o driver.o java_semantics.o
+	$(CXX) -o $@ java_parser.o java_lexer.o cli_error_handler.o main.o driver.o java_semantics.o
 
 clean:
 	rm -f javacompiler *.o

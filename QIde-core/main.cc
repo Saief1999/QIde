@@ -1,10 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include "driver.hh"
+#include "cli_error_handler.hh"
 
 int main(int argc, char *argv[])
 {
-    javacompiler::Driver driver;
+    javacompiler::CliErrorHandler errorHandler;
+    javacompiler::Driver driver(errorHandler);
 
     bool result = false;
 

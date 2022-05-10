@@ -8,7 +8,9 @@
 /** The javacompiler namespace is used to encapsulate the three parser classes
  * javacompiler::Parser, javacompiler::Scanner and javacompiler::Driver */
 namespace javacompiler {
-Driver::Driver() {}
+Driver::Driver(ErrorHandler& errorHandler) {
+    this->errorHandler = &errorHandler;
+}
 
 
 bool Driver::parse_stream(std::istream& in, const std::string& sname)
@@ -21,7 +23,7 @@ bool Driver::parse_stream(std::istream& in, const std::string& sname)
 
     JavaParser parser(*this);
 
-    JavaSemantics semantics;
+    JavaSemantics semantics(*this->errorHandler);
     this->semantics = &semantics;
 
     return (parser.parse() == 0);
@@ -44,12 +46,12 @@ bool Driver::parse_string(const std::string &input, const std::string& sname)
 void Driver::error(const class location& l,
 		   const std::string& m)
 {
-    std::cerr << BOLDWHITE << l << ": " << RESET << m << std::endl;
+    this->errorHandler->syntax_error(l,m);
 }
 
-void Driver::error(const std::string& m)
-{
-    std::cerr << m << std::endl;
-}
+// void Driver::error(const std::string& m)
+// {
+//     std::cerr << m << std::endl;
+// }
 
 } // namespace javacompiler

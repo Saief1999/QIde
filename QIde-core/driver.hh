@@ -13,10 +13,12 @@ namespace javacompiler {
  */
 class Driver {
 public:
-    Driver();
+    Driver(ErrorHandler& errorHandler);
 
     /// stream name (file or input stream) used for error messages.
     std::string streamname;
+    
+    ErrorHandler* errorHandler;
     
     /** Invoke the scanner and parser for a stream.
      * @param in	input stream
@@ -48,7 +50,7 @@ public:
 
     /** General error handling. This can be modified to output the error
      * e.g. to a dialog box. */
-    void error(const std::string& m);
+    // void error(const std::string& m);
 
     class JavaLexer* lexer;
     class JavaSemantics *semantics;

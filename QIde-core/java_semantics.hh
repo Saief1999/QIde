@@ -10,6 +10,7 @@
 #include "java_parser.hh"
 #include "utils.hh"
 #include <deque>
+#include "error_handler.hh"
 
 namespace javacompiler {
 
@@ -45,7 +46,9 @@ struct scope {
 class JavaSemantics {
 public:
 
-    JavaSemantics();
+    JavaSemantics(ErrorHandler& errorHandler);
+
+    ErrorHandler* errorHandler;
 
     /// Current Location , used to print errors
     location* current_location;
@@ -68,14 +71,37 @@ public:
     // void addImport(std::string import);
 
 
-    void throw_error(std::string msg);
-    void warning(std::string msg);
+    void throw_error(const std::string& msg);
 
+    void warning(const std::string& msg);
+
+    /**
+     * @brief Creates a new scope and pushes it to the symbol table
+     * 
+     */
     void add_scope();
+
+    /**
+     * @brief Frees up the last scope in the symbol table
+     * 
+     */
     void free_scope();
     
-
+    /**
+     * @brief Searches for a symbol in the symbol table
+     * 
+     * @param search_global whether to search in the global scope or not
+     * @param prioritize_local start by searching on the local scope first. If not found fallback to global scope
+     * @return the scope where the symbol was found, -1 if not found
+     */
     int find_symbol(std::string name, bool search_global=true, bool prioritize_local=false);
+
+    /**
+     * @brief Add a new symbol to the current scope
+     * 
+     * @param name the name of the symbol (identifier)
+     * @param symbol Information about the symbol
+     */
     void add_symbol(std::string name, symbol_entry symbol);
 
     void add_current_symbol();
@@ -96,7 +122,6 @@ public:
 
     void check_args_number();
 
-    std::string highlight(std::string identifier);
 };
 } // namespace javacompiler
 #endif // SEMANTICS_HH

@@ -61,7 +61,9 @@ set(GUI_SOURCES
         QIde-gui/bottombar.h QIde-gui/bottombar.cpp
         QIde-gui/compileoutput.h QIde-gui/compileoutput.cpp
         ${TS_FILES}
-        QIde-gui/syntax/JavaHighlighter.cpp QIde-gui/syntax/JavaHighlighter.h)
+        QIde-gui/syntax/JavaHighlighter.cpp QIde-gui/syntax/JavaHighlighter.h
+        QIde-gui/error-handling/gui_error_handler.cc QIde-gui/error-handling/gui_error_handler.hh
+        )
 
 set(GUI_RESOURCES ${PROJECT_SOURCE_DIR}/QIde-gui/syntax/keywords ${PROJECT_SOURCE_DIR}/QIde-gui/syntax/defaultClasses ${PROJECT_SOURCE_DIR}/QIde-gui/syntax/defaultInterfaces)
 

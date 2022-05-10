@@ -58,8 +58,3 @@ This will generate a binary `QIde`. That's your **entry point** to the Gui appli
 ```bash
 ./QIde
 ```
-
-
-## TODO
-
-> Errors are shown on terminal for now. We need to save them in a data structure ( that's also shared by the gui ) in order to make the gui display possible.
