@@ -8,6 +8,7 @@
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 #include <set>
+#include <QTextStream>
 
 namespace syntax {
 
