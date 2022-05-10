@@ -63,12 +63,15 @@ set(GUI_SOURCES
         ${TS_FILES}
         QIde-gui/syntax/JavaHighlighter.cpp QIde-gui/syntax/JavaHighlighter.h)
 
+set(GUI_RESOURCES ${PROJECT_SOURCE_DIR}/QIde-gui/syntax/keywords ${PROJECT_SOURCE_DIR}/QIde-gui/syntax/defaultClasses ${PROJECT_SOURCE_DIR}/QIde-gui/syntax/defaultInterfaces)
+
 set(PROJECT_SOURCES
         ${GUI_SOURCES}
         ${CORE_SOURCES}
 )
 
-file(COPY ${PROJECT_SOURCE_DIR}/QIde-gui/syntax/keywords DESTINATION ${PROJECT_BINARY_DIR})
+# Copy Resources files to binary file directory
+file(COPY ${GUI_RESOURCES} DESTINATION ${PROJECT_BINARY_DIR})
 
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

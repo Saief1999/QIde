@@ -9,7 +9,7 @@
 namespace javacompiler {
 /**
  * @brief This class works as a "glue" between the parser and the scanner.
- * 
+ * @note We should apply polymorphism here, so that the driver can be used with the GUI or with the console.   
  */
 class Driver {
 public:
