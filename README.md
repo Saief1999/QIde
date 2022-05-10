@@ -4,6 +4,8 @@
 
 This is a mini java compiler. Written in Flex (Lex) and Bison (Yacc). In addition to a GUI written in QT6 and Qt Widgets
 
+![](./resources/demo.png)
+
 ## Technical Overview
 
 
@@ -27,7 +29,7 @@ The `QIde-gui` represents the Gui application. The Gui is written entirely in Qt
 
 
 
-## Usage 
+## Build 
 
 The entire project is built with `cmake `(linking the core and the gui sources). 
 
@@ -53,8 +55,11 @@ cd build
 make
 ```
 
-This will generate a binary `QIde`. That's your **entry point** to the Gui application. Then execute
+## Usage
+
+After the build phase, a binary `QIde` will be generated. That's your **entry point** to the Gui application. You'll only have to execute it:
 
 ```bash
 ./QIde
-```
+``` 
+
