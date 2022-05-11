@@ -63,7 +63,7 @@ set(GUI_SOURCES
         ${TS_FILES}
         QIde-gui/syntax/JavaHighlighter.cpp QIde-gui/syntax/JavaHighlighter.h
         QIde-gui/error-handling/gui_error_handler.cc QIde-gui/error-handling/gui_error_handler.hh
-        )
+        QIde-gui/LineNumberArea.cpp QIde-gui/LineNumberArea.h)
 
 set(GUI_RESOURCES ${PROJECT_SOURCE_DIR}/QIde-gui/syntax/keywords ${PROJECT_SOURCE_DIR}/QIde-gui/syntax/defaultClasses ${PROJECT_SOURCE_DIR}/QIde-gui/syntax/defaultInterfaces)
 

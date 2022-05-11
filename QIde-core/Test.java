@@ -5,7 +5,7 @@ public class Test {
 		int s;
 		if(z<5)
 		{
-			int r={};
+			int r={}w;
 		}
 
 		;

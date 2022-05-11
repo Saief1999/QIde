@@ -12,25 +12,25 @@
 <context>
     <name>MainDocument</name>
     <message>
-        <location filename="maindocument.cpp" line="61"/>
+        <location filename="maindocument.cpp" line="69"/>
         <source>Cannot write file %1:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="maindocument.cpp" line="65"/>
+        <location filename="maindocument.cpp" line="73"/>
         <source>Cannot open file %1 for writing:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="maindocument.cpp" line="71"/>
-        <location filename="maindocument.cpp" line="96"/>
+        <location filename="maindocument.cpp" line="79"/>
+        <location filename="maindocument.cpp" line="104"/>
         <source>Application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="maindocument.cpp" line="96"/>
+        <location filename="maindocument.cpp" line="104"/>
         <source>Do you want to save changes of </source>
         <translation type="unfinished"></translation>
     </message>

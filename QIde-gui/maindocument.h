@@ -5,7 +5,7 @@
 #include <QSyntaxHighlighter>
 
 
-class MainDocument : public QTextEdit
+class MainDocument : public QPlainTextEdit
 {
     Q_OBJECT
 public:
@@ -19,18 +19,29 @@ public:
 
     bool maybeSave();
 
+    void lineNumberAreaPaintEvent(QPaintEvent *event);
+    int lineNumberAreaWidth();
 
 public slots:
     bool save();// if no file is already open we do a saveAs(), otherwise saveFile()
     bool saveAs();
-
+    void resizeEvent(QResizeEvent *e) override;
 public slots:
     void documentWasModified();
+
+
+private slots:
+    void updateLineNumberAreaWidth(int newBlockCount);
+    void highlightCurrentLine();
+    void updateLineNumberArea(const QRect &rect, int dy);
+
 private:
     QString title;
     QString path;
     QSyntaxHighlighter *highlighter;
     bool saveFile(QString path);
+    QWidget *lineNumberArea;
+
 
 signals:
     void documentModifState(bool modifState, MainDocument* document);
