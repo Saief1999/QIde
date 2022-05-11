@@ -45,7 +45,7 @@ set(CORE_SOURCES
         QIde-core/location.hh
         QIde-core/java_lexer.ll
         QIde-core/java_parser.yy
-)
+        QIde-core/CodeGenerator.cpp QIde-core/CodeGenerator.h QIde-core/opcode.h QIde-core/opcode.cpp QIde-core/Instruction.cpp QIde-core/Instruction.h)
 
 
 # Core Module Configuration END

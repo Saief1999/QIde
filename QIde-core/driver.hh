@@ -54,6 +54,7 @@ public:
 
     class JavaLexer* lexer;
     class JavaSemantics *semantics;
+    class CodeGenerator *codeGenerator;
 };
 
 } // namespace javacompiler

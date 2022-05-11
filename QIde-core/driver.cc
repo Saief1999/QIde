@@ -4,6 +4,7 @@
 #include "driver.hh"
 #include "java_lexer.hh"
 #include "utils.hh"
+#include "CodeGenerator.h"
 
 /** The javacompiler namespace is used to encapsulate the three parser classes
  * javacompiler::Parser, javacompiler::Scanner and javacompiler::Driver */
@@ -25,6 +26,8 @@ bool Driver::parse_stream(std::istream& in, const std::string& sname)
 
     JavaSemantics semantics(*this->errorHandler);
     this->semantics = &semantics;
+    CodeGenerator codeGenerator(semantics);
+    this->codeGenerator = &codeGenerator;
 
     return (parser.parse() == 0);
 }

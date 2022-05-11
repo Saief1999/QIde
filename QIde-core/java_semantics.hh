@@ -33,14 +33,32 @@ struct symbol_entry {
     bool is_initialized ; // whether we gave it a value
     bool is_used;
     std::deque<argument> args;
+    int pos;
 };
 
 
 
 // - For now we won't support nested global scopes, We will consider the first scope in the symbol table to be our global scope
 struct scope {
+    struct alignment
+    {
+        const std::string &name;
+        symbol_entry& symbol;
+        int offset;
+    };
+
+    int offset;
+    explicit scope(int O=0);
     // bool global; // global scope for a class ( can be nested ) 
     std::unordered_map<std::string, symbol_entry> symbols;
+    std::vector<alignment> symbolsAlignment;
+    void push_back(const std::string &name,const symbol_entry&symbol);
+    void add_symbol(const std::string &name,const symbol_entry &symbol);
+    void pop_back();
+    void remove_top();
+
+    symbol_entry& at(const std::string &name);
+    std::pair<std::reference_wrapper<symbol_entry>,int> getAlignment(const std::string &name);
 };
 
 class JavaSemantics {

@@ -1,3 +1,4 @@
+#include <functional>
 #include "java_semantics.hh"
 
 namespace javacompiler {
@@ -46,7 +47,9 @@ namespace javacompiler {
 
 
     void JavaSemantics::add_scope() {
-        this->symbol_table.push_back(scope{});
+        if(symbol_table.empty())
+            symbol_table.emplace_back();
+        else symbol_table.emplace_back(symbol_table.back().symbolsAlignment.back().offset+4);
     }
     
 
@@ -98,8 +101,9 @@ namespace javacompiler {
             this->throw_error("symbol " + errorHandler->highlight(name) + " already defined");
             return;
         }
-
-        this->symbol_table.back().symbols[name] = { symbol.type, symbol.ident_type, symbol.is_initialized, symbol.is_used, symbol.args };
+        symbol.pos=symbol_table.back().symbols.size();
+        this->symbol_table.back().push_back(name,symbol);
+        std::cout << symbol_table.back().getAlignment(name).second << ' ' << std::flush;
     }
 
 
@@ -131,6 +135,7 @@ namespace javacompiler {
         this->current_symbol_entry.is_used = false;
         this->current_symbol_entry.type.clear();
         this->current_symbol_entry.args = {};
+        current_symbol_entry.pos=0;
     }
 
     /**
@@ -233,4 +238,25 @@ namespace javacompiler {
     }
 
 
+    void scope::push_back(const std::string &name,const symbol_entry& symbol)
+    {
+        symbols.emplace(name,symbol);
+        symbolsAlignment.push_back({name,symbols[name],symbolsAlignment.empty()?offset:symbolsAlignment.back().offset+4});
+
+    }
+
+    scope::scope(int O) :offset(O){
+
+    }
+
+    void scope::pop_back() {
+        auto &&[name,symbol,offset]=symbolsAlignment.back();
+        symbols.erase(name);
+        symbolsAlignment.pop_back();
+    }
+
+    std::pair<std::reference_wrapper<symbol_entry>,int> scope::getAlignment(const std::string &name) {
+        auto & R=symbols.at(name);
+        return std::make_pair(std::ref(R),symbolsAlignment[R.pos].offset);
+    }
 } // namespace javacompiler
