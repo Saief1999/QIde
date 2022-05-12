@@ -27,7 +27,7 @@ include_directories( QIde-core )
 link_directories( QIde-core )
 
 add_custom_command(OUTPUT ${CORE_DIR}/java_parser.cc ${CORE_DIR}/java_parser.hh ${CORE_DIR}/location.hh
-        COMMAND ${YACC} -o java_parser.cc java_parser.yy
+        COMMAND ${YACC}  -r cex -o java_parser.cc java_parser.yy
         WORKING_DIRECTORY "${CORE_DIR}"
         COMMENT "Generate java parser"
         DEPENDS ${CORE_DIR}/java_parser.yy)

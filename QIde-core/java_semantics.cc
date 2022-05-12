@@ -258,6 +258,19 @@ namespace javacompiler {
         return name;
     }
 
+    void JavaSemantics::setInitialized(const std::string &name) {
+        getEntry(name).is_initialized=true;
+    }
+
+    symbol_entry &JavaSemantics::getEntry(const std::string &name) {
+       auto& entry= std::find_if(symbol_table.rbegin(),symbol_table.rend(),
+                     [&name](const scope &U)
+                     {
+                         return U.symbols.count(name);
+                     })->symbols[name];
+        return entry;
+    }
+
 
     void scope::push_back(const std::string &name,const symbol_entry& symbol)
     {

@@ -4,10 +4,12 @@
 #include <ctype.h>
 #include <any>
 #include <cstring>
-
 // extern bool build_success;
 // extern int yylineno;
 %}
+%code requires {
+    #include "opcode.hh"
+}
 
 
 /*** yacc/bison Declarations ***/
@@ -67,6 +69,7 @@
     double real;
     char character;
     bool boolean;
+    Opcode opcode;
 }
 
 /*
@@ -166,12 +169,24 @@
 %type <text> var
 %type <text> opt_var_access
 %type <num> unary_special_operator
-%type <num> opt_unary_operator
-%type <text> expression
+//%type <text> expression
 %type <text> val
 %type <text> var_load
 %type <text> var_store
 %type <text> fn_call
+%type <opcode> logical_operator
+%type <opcode> bitwise_operator
+%type <opcode> additive_operator
+%type <opcode> multiplicative_operator
+%type <opcode> order_operator
+%type <opcode> equality_operator
+%type <opcode> unary_operator
+%type <opcode> opt_unary_operator
+//%type <text> additive_expression
+//%type <text> multiplicative_expression
+//%type <text> disjunctive_expression
+//%type <text> conjunctive_expression
+//%type <text> unary_expression
 %{
 
 #include "driver.hh"
@@ -242,6 +257,11 @@ type denotes anything that can be a type
 type : nested_id opt_array_type { 
     strcpy($$ , (std::string($1)+std::string($2)).c_str());
 };
+
+type_save : type {
+    driver.codeGenerator->addInstruction(javacompiler::Opcode::STT, std::string($1));
+};
+
 opt_array_type: ARRAY opt_array_type { 
     // Array in declaration
     strcpy($$,("[]" + std::string($2)).c_str());
@@ -257,18 +277,18 @@ opt_array: '[' expression ']' opt_array {
 /*
 Operators
 */
-equality_operator : EQ | NEQ;
-order_operator : '<' | '>' | LEQ | GEQ;
+equality_operator : EQ {$$=Opcode::EQ;}| NEQ {$$=Opcode::NEQ;};
+order_operator : '<' {$$=Opcode::LESS;} | '>'{$$=Opcode::GREATER;} | LEQ {$$=Opcode::LEQ;} | GEQ {$$=Opcode::GEQ;};
 shift_operator: UNSIGNED_RIGHT_SHIFT | LEFT_SHIFT | RIGHT_SHIFT;
-multiplicative_operator: '*' | '/' | '%';
-additive_operator: '+' | '-'
-logical_operator: LOGICAL_AND | LOGICAL_OR;
+multiplicative_operator: '*' {$$=Opcode::MUL;} | '/' {$$=Opcode::DIV;} | '%' {$$=Opcode::MOD;};
+additive_operator: '+' {$$=Opcode::ADD;}| '-' {$$=Opcode::SUB;};
+logical_operator: LOGICAL_AND  | LOGICAL_OR;
 bitwise_operator: '&' | '^' | '|'
 binary_operator: equality_operator |order_operator |
     shift_operator | logical_operator | bitwise_operator |
     additive_operator | multiplicative_operator;
-unary_operator: '!' | '+' | '-' | '~';
-opt_unary_operator: unary_operator |;
+unary_operator: '!' {$$=Opcode::NOT;}| '+' {$$=Opcode::NOOP;}| '-' {$$=Opcode::NEG;} | '~' {$$=Opcode::COMP;};
+opt_unary_operator: unary_operator {$$=$1;} | {$$=Opcode::NOOP;};
 unary_special_operator: INCREMENT {$$=1;}| DECREMENT{$$=-1;};
 
 /*
@@ -325,7 +345,7 @@ assignment_operator: '=' { driver.semantics->assign_value(driver.semantics->curr
     SELF_BITWISE_XOR { driver.semantics->use_symbol(driver.semantics->current_symbol); } ;
 
 /*A general "enough" mathematical expression*/
-expression: expression binary_operator opt_unary_operator val   {
+/*expression: expression binary_operator opt_unary_operator val   {
         std::string rhsName($4), lhsName($1);
         symbol_entry entry;
         entry.type="int";
@@ -341,7 +361,48 @@ expression: expression binary_operator opt_unary_operator val   {
     }|
      expression binary_operator opt_unary_operator '(' expression ')' opt_array  {
 
+    };*/
+expression : disjunctive_expression;
+
+unary_expression: opt_unary_operator val {
+    if($1!=Opcode::NOOP)
+        driver.codeGenerator->addInstruction($1);
+}
+    | opt_unary_operator '(' disjunctive_expression ')' opt_array {
+        if($1!=Opcode::NOOP)
+            driver.codeGenerator->addInstruction($1);
     };
+
+multiplicative_expression: multiplicative_expression multiplicative_operator  unary_expression  {
+    driver.codeGenerator->addInstruction($2);
+}
+    | unary_expression;
+
+additive_expression: additive_expression additive_operator multiplicative_expression {
+    driver.codeGenerator->addInstruction($2);
+}
+    | multiplicative_expression;
+
+relational_expression: relational_expression order_operator additive_expression {
+    driver.codeGenerator->addInstruction($2);
+}
+    | additive_expression;
+
+equality_expression: equality_expression equality_operator relational_expression {
+    driver.codeGenerator->addInstruction($2);
+}
+    | relational_expression;
+
+conjunctive_expression: conjunctive_expression LOGICAL_AND equality_expression{
+    driver.codeGenerator->addInstruction(javacompiler::Opcode::LOGICAL_AND);
+}
+        | equality_expression;
+disjunctive_expression : disjunctive_expression LOGICAL_OR conjunctive_expression {
+    driver.codeGenerator->addInstruction(javacompiler::Opcode::LOGICAL_OR);
+}
+        | conjunctive_expression;
+
+
 
 
 /*boolean int
@@ -353,7 +414,9 @@ statement_s0: ID {
     /* This represents either a variable, or a type of a variable ( if we added another ID after it ) */
         driver.semantics->current_symbol = std::string($1);
     } statement_s1 |
-    '(' expression ')' opt_array |
+    '(' expression ')' opt_array {
+        driver.codeGenerator->addInstruction(Opcode::POP);
+    }|
     new_expression |
     unary_special_operator var{
         driver.codeGenerator->addInstruction($1==1?javacompiler::Opcode::INC:javacompiler::Opcode::DEC, $2);
@@ -371,12 +434,12 @@ statement_s1: var_declarations |
         driver.codeGenerator->callFunction(driver.semantics->current_method_call);
         driver.semantics->current_method_call.clear();
         driver.semantics->is_call_definition = false;
+        driver.codeGenerator->addInstruction(Opcode::POP);
     } ')' opt_array statement_s2 |
     assignment {
         driver.codeGenerator->addInstruction(javacompiler::Opcode::STORE, driver.semantics->current_symbol);
-    }|
-    binary_operator expression { driver.semantics->use_symbol(driver.semantics->current_symbol); } |
-    unary_special_operator { 
+    } | binary_operator expression { driver.semantics->use_symbol(driver.semantics->current_symbol); } 
+    | unary_special_operator { 
         driver.semantics->use_symbol(driver.semantics->current_symbol); 
         driver.codeGenerator->addInstruction($1==1?javacompiler::Opcode::INC:javacompiler::Opcode::DEC, driver.semantics->current_symbol);
         }|;
@@ -433,7 +496,7 @@ formal_args: obligatory_formal_args |;
 /*Optional assignment of a variable*/
 opt_assignment: '=' assignable_expression {
     // std::cout << "assigning a value to a variable" << std::endl;
-    driver.semantics->current_symbol_entry.is_initialized = true;
+    driver.semantics->setInitialized(driver.semantics->current_symbol);
     driver.codeGenerator->addInstruction(javacompiler::Opcode::STORE, driver.semantics->current_symbol);
 }|;
 
@@ -458,11 +521,17 @@ var_declaration_body: ID {
         // driver.semantics->add_symbol($1, { identifier_type::VARIABLE, false });
     };
 
-var_declarations: var_declaration_body  ',' var_declarations {
+var_declarations: var_declarations  ',' var_declaration_body {
     driver.semantics->current_type.clear();
 }
-    | var_declaration_body; 
-statement_declarative: type var_declarations;
+    | var_declaration_body {
+    driver.semantics->current_type.clear();
+}; 
+statement_declarative: type {
+    driver.semantics->current_type = $1;
+} var_declarations {
+    driver.semantics->current_type.clear();
+};
 
 /*
     Assignment of a variable
@@ -496,7 +565,7 @@ statement:
     statement_pm_1 ';' |*/
     statement_s0 ';'|
     for_statement |
-    range_for_statement |
+//   range_for_statement |
     if_statement |
     while_statement |
     do_while_statement | 
@@ -520,9 +589,7 @@ block: opening_bracket opt_statement_seq closing_bracket;
 /*
 A condition, for now it is defined as any expression
 */
-condition: expression {
-
-}
+condition: expression
 conditional_body: statement | block;
 
 /*
@@ -530,10 +597,39 @@ Conditional statements (Special statements)
 */
 opt_else_statement:ELSE conditional_body | %prec LOWEST;
 if_statement: IF '(' condition ')' {
+    driver.semantics->current_address.push_back(driver.codeGenerator->addInstruction(javacompiler::Opcode::JMP_Z, 0));
     //driver.codeGenerator.addInstruction(w)
-} conditional_body opt_else_statement | IF '(' error ')' conditional_body opt_else_statement;
+} conditional_body {
+    driver.codeGenerator->addInstruction(javacompiler::Opcode::JMP, 0);
+    driver.semantics->current_address.push_back(driver.codeGenerator->currentInstructionOffset());
+} opt_else_statement {
+    auto alt_address=driver.semantics->current_address.back();
+    driver.semantics->current_address.pop_back();
+    auto src_address=driver.semantics->current_address.back();
+    driver.semantics->current_address.pop_back();
+    driver.codeGenerator->setOperand(src_address,alt_address);
+    driver.codeGenerator->setOperand(alt_address-1,driver.codeGenerator->currentInstructionOffset());
+} | IF '(' error ')' conditional_body opt_else_statement;
 for_updating_statement: statement_pm_1 | assignment_statement
-for_statement: FOR '(' statement_declarative ';' condition ';' for_updating_statement ')' conditional_body;
+for_statement: FOR '(' statement_declarative ';'{
+    driver.semantics->current_address.push_back(driver.codeGenerator->currentInstructionOffset());
+} condition ';' {
+    driver.semantics->current_address.push_back(driver.codeGenerator->addInstruction(javacompiler::Opcode::JMP_Z, 0));
+    auto branch= driver.codeGenerator->createBranch();
+    driver.codeGenerator->branchesStack.push_back({branch});
+    driver.codeGenerator->setDefaultBranch(branch);
+}for_updating_statement ')' {driver.codeGenerator->setDefaultBranch("main");} conditional_body {
+    const auto& branchList=driver.codeGenerator->branchesStack.back();
+    std::cerr << driver.codeGenerator->generateCode() << std::endl;
+    driver.codeGenerator->combineBranches(branchList);
+    int jmp_address=driver.semantics->current_address.back();
+    driver.semantics->current_address.pop_back();
+    driver.codeGenerator->addInstruction(Opcode::JMP, driver.semantics->current_address.back());
+    driver.codeGenerator->setOperand(jmp_address,driver.codeGenerator->currentInstructionOffset());
+    driver.semantics->current_address.pop_back();
+    driver.codeGenerator->branchesStack.pop_back();
+
+};
 range_for_statement: FOR '(' type ID ':' val ')' conditional_body | FOR '(' error ')' conditional_body;
 while_statement: WHILE '(' condition ')' conditional_body;
 do_while_statement: DO block WHILE '(' condition ')' ';' | DO block WHILE '(' error ')' ';';
@@ -543,7 +639,9 @@ switch_label: CASE case_val | DEFAULT;
 case_block: switch_label ':' opt_statement_seq;
 switch_body: case_block switch_body |; 
 opt_return_expression: new_expression | expression |;
-return_statement: RETURN opt_return_expression;
+return_statement: RETURN opt_return_expression {
+    driver.codeGenerator->addInstruction(Opcode::RETURN);
+};
 
 
 /*

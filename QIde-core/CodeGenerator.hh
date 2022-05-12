@@ -9,13 +9,17 @@
 #include "java_semantics.hh"
 #include "opcode.hh"
 #include "Instruction.hh"
+#include <map>
 
 namespace javacompiler
 {
 
     class CodeGenerator {
         JavaSemantics * semantics;
-        std::vector<std::unique_ptr<Instruction>> instructions;
+        CodeGenerator* subCodeGenerator=nullptr;
+        std::vector<std::vector<std::unique_ptr<Instruction>>> instructionsMap;
+        std::reference_wrapper<std::vector<std::unique_ptr<Instruction>>> instructions;
+        std::unordered_map<std::string,int> branchesNames;
     public:
         explicit CodeGenerator(JavaSemantics& semantics);
         void setSemantics(JavaSemantics& semantics);
@@ -40,6 +44,13 @@ namespace javacompiler
         std::string make_tmp_symbol(const symbol_entry& entry);
         std::unordered_set<std::string> ignore_list;
         std::unordered_map<std::string,int> fn_offset;
+        std::string createBranch();
+        void createBranch(const std::string &name);
+        void setDefaultBranch(const std::string &name);
+        void setDefaultBranch(int index);
+        void combineBranches(const std::vector<std::string>&order);
+        void combineBranches();
+        std::vector<std::vector<std::string>> branchesStack;
     };
 
 } // javacompiler
