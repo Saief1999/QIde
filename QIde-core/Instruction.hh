@@ -2,10 +2,10 @@
 // Created by ramizouari on 11/05/22.
 //
 
-#ifndef QIDE_INSTRUCTION_H
-#define QIDE_INSTRUCTION_H
+#ifndef QIDE_INSTRUCTION_HH
+#define QIDE_INSTRUCTION_HH
 
-#include "opcode.h"
+#include "opcode.hh"
 
 namespace javacompiler {
 
@@ -34,7 +34,7 @@ namespace javacompiler {
         operator std::string() const override;
     };
 
-    std::string  to_string(Instruction &instruction);
+    std::string  to_string(const Instruction &instruction);
 } // javacompiler
 
-#endif //QIDE_INSTRUCTION_H
+#endif //QIDE_INSTRUCTION_HH

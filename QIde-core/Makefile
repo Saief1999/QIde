@@ -28,8 +28,8 @@ java_lexer.cc: java_lexer.ll
 
 # Link executable
 
-javacompiler: java_parser.o java_lexer.o cli_error_handler.o main.o driver.o java_semantics.o
-	$(CXX) -o $@ java_parser.o java_lexer.o cli_error_handler.o main.o driver.o java_semantics.o
+javacompiler: java_parser.o java_lexer.o cli_error_handler.o main.o driver.o java_semantics.o CodeGenerator.o opcode.o Instruction.o
+	$(CXX) -o $@ java_parser.o java_lexer.o cli_error_handler.o main.o driver.o java_semantics.o CodeGenerator.o opcode.o Instruction.o
 
 clean:
 	rm -f javacompiler *.o

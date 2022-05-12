@@ -45,8 +45,12 @@ bool CompileOutput::runCompilation(QString path) {
     try {
         result = driver.parse_stream(infile, filename);
     }
+    catch(std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
     catch(...) {
-        return 0;
+        return false;
     }
 
     return result;

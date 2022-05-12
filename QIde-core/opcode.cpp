@@ -1,7 +1,7 @@
 //
 // Created by ramizouari on 11/05/22.
 //
-#include "opcode.h"
+#include "opcode.hh"
 
 std::string javacompiler::to_string(Opcode opcode)
 {
@@ -44,5 +44,9 @@ std::string javacompiler::to_string(Opcode opcode)
             return "NEQ";
         case Opcode::EGAL:
             return "EQUAL";
+        case Opcode::INC:
+            return "INC";
+        case Opcode::DEC:
+            return "DEC";
     }
 }

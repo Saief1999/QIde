@@ -1,0 +1,6 @@
+# Code Generation
+- ENTRY point is defined by address
+- FUNCTION CALL is defined by address
+- Rewriting expressions
+- Support for assignment
+- Supporting conditional flows

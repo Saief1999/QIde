@@ -1,4 +1,5 @@
 #include <functional>
+#include <sstream>
 #include "java_semantics.hh"
 
 namespace javacompiler {
@@ -49,7 +50,11 @@ namespace javacompiler {
     void JavaSemantics::add_scope() {
         if(symbol_table.empty())
             symbol_table.emplace_back();
-        else symbol_table.emplace_back(symbol_table.back().symbolsAlignment.back().offset+4);
+        else {
+            int offset=scopeType==scope_type::ANONYMOUS;
+            symbol_table.emplace_back(symbol_table.back().symbolsAlignment.back().offset + offset);
+        }
+        scopeType=scope_type::ANONYMOUS;
     }
     
 
@@ -103,7 +108,7 @@ namespace javacompiler {
         }
         symbol.pos=symbol_table.back().symbols.size();
         this->symbol_table.back().push_back(name,symbol);
-        std::cout << symbol_table.back().getAlignment(name).second << ' ' << std::flush;
+        //std::cout << symbol_table.back().getAlignment(name).second << ' ' << std::flush;
     }
 
 
@@ -237,11 +242,27 @@ namespace javacompiler {
         args_number = 0;
     }
 
+    int JavaSemantics::indexOf(const std::string &name) const {
+        return symbol_table.size()-1-std::distance(symbol_table.rbegin(),std::find_if(symbol_table.rbegin(),symbol_table.rend(),
+                            [&name](const scope &U)
+                            {
+                                return U.symbols.count(name);
+                            }));
+    }
+
+    std::string JavaSemantics::make_tmp_symbol(const symbol_entry &entry) {
+        std::stringstream stream;
+        stream << "@" << std::hex << tmp_counter++;
+        auto name=stream.str();
+        add_symbol(name,entry);
+        return name;
+    }
+
 
     void scope::push_back(const std::string &name,const symbol_entry& symbol)
     {
         symbols.emplace(name,symbol);
-        symbolsAlignment.push_back({name,symbols[name],symbolsAlignment.empty()?offset:symbolsAlignment.back().offset+4});
+        symbolsAlignment.push_back({name,symbols[name],symbolsAlignment.empty()?offset:symbolsAlignment.back().offset+1});
 
     }
 

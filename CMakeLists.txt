@@ -29,12 +29,14 @@ link_directories( QIde-core )
 add_custom_command(OUTPUT ${CORE_DIR}/java_parser.cc ${CORE_DIR}/java_parser.hh ${CORE_DIR}/location.hh
         COMMAND ${YACC} -o java_parser.cc java_parser.yy
         WORKING_DIRECTORY "${CORE_DIR}"
-        COMMENT "Generate java parser")
+        COMMENT "Generate java parser"
+        DEPENDS ${CORE_DIR}/java_parser.yy)
 
 add_custom_command(OUTPUT ${CORE_DIR}/java_lexer.cc
         COMMAND ${LEX} -o java_lexer.cc java_lexer.ll
         WORKING_DIRECTORY "${CORE_DIR}"
-        COMMENT "Generate java lexer")
+        COMMENT "Generate java lexer"
+        DEPENDS ${CORE_DIR}/java_lexer.ll)
 
 set(CORE_SOURCES
         QIde-core/java_lexer.cc QIde-core/java_lexer.hh
@@ -45,7 +47,7 @@ set(CORE_SOURCES
         QIde-core/location.hh
         QIde-core/java_lexer.ll
         QIde-core/java_parser.yy
-        QIde-core/CodeGenerator.cpp QIde-core/CodeGenerator.h QIde-core/opcode.h QIde-core/opcode.cpp QIde-core/Instruction.cpp QIde-core/Instruction.h)
+        QIde-core/CodeGenerator.cc QIde-core/CodeGenerator.hh QIde-core/opcode.hh QIde-core/opcode.cpp QIde-core/Instruction.cc QIde-core/Instruction.hh)
 
 
 # Core Module Configuration END

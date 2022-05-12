@@ -66,6 +66,7 @@
     long long num;
     double real;
     char character;
+    bool boolean;
 }
 
 /*
@@ -79,12 +80,14 @@
 
 
 %token  <text>      ID          "identifier" 
-        CHARACTER   "character"
-        STRING      "string"
+        <character> CHARACTER
+        <text> STRING      "string"
+        <num> INTEGER
+        <real> REAL
+%token
         INCREMENT   "++"
         DECREMENT   "--"
-        INTEGER     "integer"
-        REAL        "real"
+
         CLASS       "class"
         ARRAY       "[]"
         RETURN      "return"
@@ -162,10 +165,19 @@
 %type <text> type
 %type <text> var
 %type <text> opt_var_access
+%type <num> unary_special_operator
+%type <num> opt_unary_operator
+%type <text> expression
+%type <text> val
+%type <text> var_load
+%type <text> var_store
+%type <text> fn_call
 %{
 
 #include "driver.hh"
 #include "java_lexer.hh"
+#include "CodeGenerator.hh"
+#include "opcode.hh"
 
 /* this "connects" the bison parser in the driver to the flex scanner class
  * object. it defines the yylex() function call to pull the next token from the
@@ -204,6 +216,26 @@ var : ID {
     /*God bless you for that comment*/
     strcpy($$, (std::string($1)+std::string($3) + std::string($4)).c_str());
 };
+
+
+/*
+var_load is a variable with a load instruction
+*/
+var_load : var{
+    driver.codeGenerator->addInstruction(javacompiler::Opcode::LDV, std::string($1));
+    strcpy($$, $1);
+};
+
+
+/*
+var_store is a variable with a store instruction
+*/
+var_store : var{
+    driver.codeGenerator->addInstruction(javacompiler::Opcode::STV, std::string($1));
+    strcpy($$, $1);
+};
+
+
 /*
 type denotes anything that can be a type
 */
@@ -237,22 +269,45 @@ binary_operator: equality_operator |order_operator |
     additive_operator | multiplicative_operator;
 unary_operator: '!' | '+' | '-' | '~';
 opt_unary_operator: unary_operator |;
-unary_special_operator: INCREMENT | DECREMENT;
+unary_special_operator: INCREMENT {$$=1;}| DECREMENT{$$=-1;};
 
 /*
 A function call
 */
-fn_call: var '(' args ')' opt_array;
+fn_call: var '(' args ')'  {
+    driver.codeGenerator->callFunction($1);
+} opt_array {
+        strcpy($$, $1);
+};
 opt_var_fn_access: '.' var_fn |; 
 /*
 A variable or a function call
 */
-var_fn : var { driver.semantics->use_symbol($1); } | fn_call opt_var_fn_access;
+var_fn : var_load { driver.semantics->use_symbol($1); } | fn_call opt_var_fn_access;
 
 /*
 val denotes anything that can be a value
 */
-val: var_fn | TRUE | FALSE | INTEGER | REAL | CHARACTER | STRING opt_string_access; /*TODO: upgrade it to the EBNF case*/
+val: var_fn | TRUE {
+            strcpy($$,"true");
+            driver.codeGenerator->addInstruction(javacompiler::Opcode::LDC, 1);
+        }| FALSE{
+            strcpy($$,"false");
+            driver.codeGenerator->addInstruction(javacompiler::Opcode::LDC, 0);
+        } | INTEGER {
+            driver.codeGenerator->addInstruction(javacompiler::Opcode::LDC,$1);
+            auto i = std::to_string($1);
+            strcpy($$,i.c_str());
+        } | REAL {
+            driver.codeGenerator->addInstruction(javacompiler::Opcode::LDC, $1);
+            auto i = std::to_string($1);
+            strcpy($$,i.c_str());
+        }| CHARACTER {
+            driver.codeGenerator->addInstruction(javacompiler::Opcode::LDC, $1);
+            strncpy($$,&$1,1);
+        } | STRING opt_string_access {
+            strcpy($$,$1);
+        }; /*TODO: upgrade it to the EBNF case*/
 opt_string_access: '.' var_fn|;
 
 /*Operator that assigns a value to its left side*/
@@ -270,10 +325,23 @@ assignment_operator: '=' { driver.semantics->assign_value(driver.semantics->curr
     SELF_BITWISE_XOR { driver.semantics->use_symbol(driver.semantics->current_symbol); } ;
 
 /*A general "enough" mathematical expression*/
-expression: opt_unary_operator val binary_operator expression | 
-    opt_unary_operator val | 
-    opt_unary_operator '(' expression ')' opt_array |
-    opt_unary_operator '(' expression ')' opt_array binary_operator expression;
+expression: expression binary_operator opt_unary_operator val   {
+        std::string rhsName($4), lhsName($1);
+        symbol_entry entry;
+        entry.type="int";
+        auto tmp=driver.codeGenerator->make_tmp_symbol(entry);
+        driver.codeGenerator->addInstruction(javacompiler::Opcode::LDV,rhsName);
+        driver.codeGenerator->addInstruction(javacompiler::Opcode::ADD);
+        strcpy($$,tmp.c_str());
+} | 
+    opt_unary_operator val {
+        strcpy($$,$2);
+    }| 
+    opt_unary_operator '(' expression ')' opt_array {
+    }|
+     expression binary_operator opt_unary_operator '(' expression ')' opt_array  {
+
+    };
 
 
 /*boolean int
@@ -287,7 +355,9 @@ statement_s0: ID {
     } statement_s1 |
     '(' expression ')' opt_array |
     new_expression |
-    unary_special_operator var;
+    unary_special_operator var{
+        driver.codeGenerator->addInstruction($1==1?javacompiler::Opcode::INC:javacompiler::Opcode::DEC, $2);
+    };
 
 statement_s1: var_declarations |
     '.' ID {
@@ -298,18 +368,26 @@ statement_s1: var_declarations |
     '(' {
         driver.semantics->set_current_method_call(driver.semantics->current_symbol); 
     } args {
+        driver.codeGenerator->callFunction(driver.semantics->current_method_call);
         driver.semantics->current_method_call.clear();
         driver.semantics->is_call_definition = false;
     } ')' opt_array statement_s2 |
-    assignment|
+    assignment {
+        driver.codeGenerator->addInstruction(javacompiler::Opcode::STORE, driver.semantics->current_symbol);
+    }|
     binary_operator expression { driver.semantics->use_symbol(driver.semantics->current_symbol); } |
-    unary_special_operator { driver.semantics->use_symbol(driver.semantics->current_symbol); }|;
+    unary_special_operator { 
+        driver.semantics->use_symbol(driver.semantics->current_symbol); 
+        driver.codeGenerator->addInstruction($1==1?javacompiler::Opcode::INC:javacompiler::Opcode::DEC, driver.semantics->current_symbol);
+        }|;
 
 rhs: assignment |
     binary_operator expression; 
 
 statement_s2: '.' val rhs |
-    rhs|;
+    rhs{
+        
+    }|;
 
 /*
 New expression is an expression having the new operator
@@ -356,6 +434,7 @@ formal_args: obligatory_formal_args |;
 opt_assignment: '=' assignable_expression {
     // std::cout << "assigning a value to a variable" << std::endl;
     driver.semantics->current_symbol_entry.is_initialized = true;
+    driver.codeGenerator->addInstruction(javacompiler::Opcode::STORE, driver.semantics->current_symbol);
 }|;
 
 /*
@@ -364,15 +443,17 @@ Variable declaration, this special statement can be derived with the rule statem
 
 var_declaration_body: ID {
         // a type is first detected as the "current_symbol" , if another identifier is found after it, it becomes the "current_type"
-        if (driver.semantics->current_type.empty()) driver.semantics->current_type = driver.semantics->current_symbol;
+        if (driver.semantics->current_type.empty()) 
+            driver.semantics->current_type = driver.semantics->current_symbol;
         driver.semantics->current_symbol_entry.type = driver.semantics->current_type; // this is saved on 'statement_s0'
         driver.semantics->current_symbol = std::string($1);
         driver.semantics->current_symbol_entry.ident_type = identifier_type::VARIABLE;
         // std::cout << "setting type for " <<driver.semantics->current_symbol<< " as "<<driver.semantics->current_symbol_entry.type<<std::endl;
 
-    } opt_array_type opt_assignment {
-
+    } opt_array_type {
         driver.semantics->add_current_symbol();
+        } opt_assignment {
+
         driver.semantics->reset_current_symbol();
         // driver.semantics->add_symbol($1, { identifier_type::VARIABLE, false });
     };
@@ -390,9 +471,19 @@ assignment: assignment_operator expression |
     '=' new_expression {
         driver.semantics->assign_value(driver.semantics->current_symbol);
     };
-assignment_statement: var assignment;
-statement_pm_1: unary_special_operator var { driver.semantics->use_symbol($2); } |
-    var unary_special_operator { driver.semantics->use_symbol($1); }; /*Increment/Decrement by 1*/
+assignment_statement: var assignment {
+    //driver.codeGenerator->isLeftSide=true;
+    driver.codeGenerator->addInstruction(javacompiler::Opcode::STORE, $1);
+};
+statement_pm_1: unary_special_operator var { 
+    driver.semantics->use_symbol($2); 
+    driver.codeGenerator->addInstruction($1==1?javacompiler::Opcode::INC:javacompiler::Opcode::DEC, $2);
+    } |
+    var unary_special_operator {
+
+         driver.semantics->use_symbol($1);
+        driver.codeGenerator->addInstruction($2==1?javacompiler::Opcode::INC:javacompiler::Opcode::DEC, $1);
+ }; /*Increment/Decrement by 1*/
 
 /*
 A more general form of a statement
@@ -429,16 +520,20 @@ block: opening_bracket opt_statement_seq closing_bracket;
 /*
 A condition, for now it is defined as any expression
 */
-condition: expression
+condition: expression {
+
+}
 conditional_body: statement | block;
 
 /*
 Conditional statements (Special statements)
 */
 opt_else_statement:ELSE conditional_body | %prec LOWEST;
-if_statement: IF '(' condition ')' conditional_body opt_else_statement | IF '(' error ')' conditional_body opt_else_statement;
+if_statement: IF '(' condition ')' {
+    //driver.codeGenerator.addInstruction(w)
+} conditional_body opt_else_statement | IF '(' error ')' conditional_body opt_else_statement;
 for_updating_statement: statement_pm_1 | assignment_statement
-for_statement: FOR '(' statement_declarative ';' expression ';' for_updating_statement ')' conditional_body;
+for_statement: FOR '(' statement_declarative ';' condition ';' for_updating_statement ')' conditional_body;
 range_for_statement: FOR '(' type ID ':' val ')' conditional_body | FOR '(' error ')' conditional_body;
 while_statement: WHILE '(' condition ')' conditional_body;
 do_while_statement: DO block WHILE '(' condition ')' ';' | DO block WHILE '(' error ')' ';';
@@ -462,7 +557,6 @@ cls_modifier: PUBLIC |;
 cls_attr_more: ',' ID {
         driver.semantics->current_symbol = std::string($2);
         driver.semantics->add_current_symbol();
-
     } opt_assignment cls_attr_more | ';' | error ';';
 cls_attr_sign: opt_assignment  {
         // GLOBAL VARIABLE DECLARATION
@@ -477,10 +571,15 @@ cls_attr_sign: opt_assignment  {
         driver.semantics->current_symbol_entry.ident_type = identifier_type::METHOD;
         driver.semantics->current_method = driver.semantics->current_symbol;
         driver.semantics->add_current_symbol();
+        driver.codeGenerator->addFunctionEntry(driver.semantics->current_symbol);
         driver.semantics->reset_current_symbol();
     }
-    formal_args ')' { driver.semantics->current_method.clear();}
-    block
+    formal_args ')' { driver.semantics->current_method.clear();
+        driver.semantics->scopeType = scope_type::FUNCTION;
+    }
+    block {
+        driver.codeGenerator->addInstruction(javacompiler::Opcode::END);
+    }
     | '(' error ')' block;
 fn_access_modifier: PRIVATE | PUBLIC | PROTECTED;
 fn_static_modifier: STATIC;
@@ -541,7 +640,9 @@ opt_pkg_declaration: PACKAGE nested_id ';'|;
 pkg_import: IMPORT nested_id ';' pkg_import |;
 type_definitions: interface_definition  type_definitions_more | cls_definition type_definitions_more; 
 type_definitions_more: type_definitions|;
-main_program: opt_pkg_declaration pkg_import type_definitions;
+main_program: opt_pkg_declaration pkg_import type_definitions{
+        std::cout << driver.codeGenerator->generateCode() << std::endl;
+};
 
  /*** END GRAMMAR ***/
 

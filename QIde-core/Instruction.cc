@@ -4,7 +4,7 @@
 
 #include <string>
 #include <sstream>
-#include "Instruction.h"
+#include "Instruction.hh"
 
 namespace javacompiler
 {
@@ -33,5 +33,8 @@ namespace javacompiler
 
     BinaryInstruction::BinaryInstruction(Opcode opcode, int op1,int op2): Instruction(opcode),op1(op1),op2(op2) {}
 
-    std::string to_string(Instruction &instruction);
+    std::string to_string(const Instruction &instruction)
+    {
+        return static_cast<std::string>(instruction);
+    }
 } // javacompiler

@@ -2,8 +2,8 @@
 // Created by ramizouari on 11/05/22.
 //
 
-#ifndef QIDE_OPCODE_H
-#define QIDE_OPCODE_H
+#ifndef QIDE_OPCODE_HH
+#define QIDE_OPCODE_HH
 
 #include <string>
 
@@ -29,6 +29,8 @@ namespace  javacompiler
         SUPE,
         DIFF,
         EGAL,
+        INC,
+        DEC,
         EQUAL=EGAL,
         EQ=EQUAL,
         LESS=INF,
@@ -39,8 +41,12 @@ namespace  javacompiler
         RETURN=RETOUR,
         CALL=APPEL,
         ENTRY=ENTREE,
-        END=SORTIE
+        END=SORTIE,
+        JMP_Z,
+        JMP_NZ,
+        POP,
+        NOOP
     };
     std::string to_string(Opcode opcode);
 }
-#endif //QIDE_OPCODE_H
+#endif //QIDE_OPCODE_HH

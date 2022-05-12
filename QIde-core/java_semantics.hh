@@ -14,12 +14,27 @@
 
 namespace javacompiler {
 
-enum identifier_type {
+enum class identifier_type {
     CLASS,
     INTERFACE,
     METHOD,
     VARIABLE,
+    TMP,
     UNDEF
+};
+
+enum class context
+{
+    ARITHMETIC_EXPRESSION,
+    FUNCTION_CALL,
+    UNKNOWN
+};
+
+enum class scope_type
+{
+    CLASS,
+    FUNCTION,
+    ANONYMOUS
 };
 
 struct argument {
@@ -42,7 +57,7 @@ struct symbol_entry {
 struct scope {
     struct alignment
     {
-        const std::string &name;
+        std::string name;
         symbol_entry& symbol;
         int offset;
     };
@@ -62,6 +77,7 @@ struct scope {
 };
 
 class JavaSemantics {
+    inline static int tmp_counter=0;
 public:
 
     JavaSemantics(ErrorHandler& errorHandler);
@@ -83,6 +99,8 @@ public:
 
     std::string current_method;
     std::string current_method_call;
+
+    context current_context;
     int args_number;
     /// Whether the currently called function is predefined (ie. imported)
     bool is_call_definition;
@@ -136,10 +154,13 @@ public:
 
     void set_current_method_call(std::string name);
 
+    std::string make_tmp_symbol(const symbol_entry &entry);
+
     void init_definitions();
 
     void check_args_number();
-
+    int indexOf(const std::string& name) const;
+    scope_type scopeType=scope_type::ANONYMOUS;
 };
 } // namespace javacompiler
 #endif // SEMANTICS_HH
