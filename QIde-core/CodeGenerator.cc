@@ -25,7 +25,13 @@ namespace javacompiler {
         instructions.push_back(std::make_unique<BinaryInstruction>(opcode,op1,op2));
     }
 
-    int CodeGenerator::getOffset(const std::string &name) {
+    int CodeGenerator::getOffset(const std::string &name)
+    {
+        auto pos=semantics->symbol_table.at(semantics->indexOf(name)).symbols[name].pos;
+        auto offset=semantics->symbol_table.at(semantics->indexOf(name)).symbolsAlignment[pos].offset;
+        std::cout << offset << ' ' << std::flush;
+        return offset;
+
     }
 
 
