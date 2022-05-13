@@ -9,6 +9,7 @@ namespace javacompiler {
     CodeGenerator::CodeGenerator(JavaSemantics &semantics):semantics(&semantics),instructionsMap(1),instructions(instructionsMap.front()) {
         for(const auto &fn:semantics.definitions)
             fn_offset.emplace(fn,-1-fn_offset.size());
+        addInstruction(Opcode::MAIN,0);
     }
 
     void CodeGenerator::setSemantics(JavaSemantics &semantics) {
@@ -52,8 +53,10 @@ namespace javacompiler {
     }
 
     std::string CodeGenerator::generateCode() const {
+        if(main_offset==0)
+            throw std::logic_error("Main function is not defined");
         std::stringstream  S;
-        for(const auto &insPtr:instructions.get())
+        for(const auto &insPtr:instructionsMap.front())
             S << to_string(*insPtr) << '\n';
         return S.str();
     }
@@ -79,6 +82,10 @@ namespace javacompiler {
     int CodeGenerator::addFunctionEntry(const std::string &name)
     {
         auto offset=currentInstructionOffset();
+        if(name=="main") {
+            main_offset = offset;
+            setOperand(0,main_offset);
+        }
         fn_offset.emplace(name,offset);
         return addInstruction(Opcode::ENTRY,offset);
     }

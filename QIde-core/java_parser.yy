@@ -182,6 +182,7 @@
 %type <opcode> equality_operator
 %type <opcode> unary_operator
 %type <opcode> opt_unary_operator
+%type <opcode> assignment_operator
 //%type <text> additive_expression
 //%type <text> multiplicative_expression
 //%type <text> disjunctive_expression
@@ -282,8 +283,8 @@ order_operator : '<' {$$=Opcode::LESS;} | '>'{$$=Opcode::GREATER;} | LEQ {$$=Opc
 shift_operator: UNSIGNED_RIGHT_SHIFT | LEFT_SHIFT | RIGHT_SHIFT;
 multiplicative_operator: '*' {$$=Opcode::MUL;} | '/' {$$=Opcode::DIV;} | '%' {$$=Opcode::MOD;};
 additive_operator: '+' {$$=Opcode::ADD;}| '-' {$$=Opcode::SUB;};
-logical_operator: LOGICAL_AND  | LOGICAL_OR;
-bitwise_operator: '&' | '^' | '|'
+logical_operator: LOGICAL_AND {$$=Opcode::LOGICAL_AND;}  | LOGICAL_OR { $$=Opcode::LOGICAL_OR;};
+bitwise_operator: '&' {$$=Opcode::BITWISE_AND;}| '^' {$$=Opcode::BITWISE_XOR;}| '|' {$$=Opcode::BITWISE_OR;};
 binary_operator: equality_operator |order_operator |
     shift_operator | logical_operator | bitwise_operator |
     additive_operator | multiplicative_operator;
@@ -294,7 +295,7 @@ unary_special_operator: INCREMENT {$$=1;}| DECREMENT{$$=-1;};
 /*
 A function call
 */
-fn_call: var '(' args ')'  {
+fn_call: var {driver.semantics->current_method_call=$1;}'(' args ')'  {
     driver.codeGenerator->callFunction($1);
 } opt_array {
         strcpy($$, $1);
@@ -331,18 +332,42 @@ val: var_fn | TRUE {
 opt_string_access: '.' var_fn|;
 
 /*Operator that assigns a value to its left side*/
-assignment_operator: '=' { driver.semantics->assign_value(driver.semantics->current_symbol); }| 
-    SELF_UNSIGNED_RIGHT_SHIFT { driver.semantics->use_symbol(driver.semantics->current_symbol); } |
-    SELF_RIGHT_SHIFT { driver.semantics->use_symbol(driver.semantics->current_symbol); } |
-    SELF_LEFT_SHIFT { driver.semantics->use_symbol(driver.semantics->current_symbol); } |
-    SELF_PLUS { driver.semantics->use_symbol(driver.semantics->current_symbol); } |
-    SELF_MINUS { driver.semantics->use_symbol(driver.semantics->current_symbol); } |
-    SELF_TIMES { driver.semantics->use_symbol(driver.semantics->current_symbol); } |
-    SELF_DIV { driver.semantics->use_symbol(driver.semantics->current_symbol); } |
-    SELF_MOD { driver.semantics->use_symbol(driver.semantics->current_symbol); } |
-    SELF_BITWISE_AND { driver.semantics->use_symbol(driver.semantics->current_symbol); } |
-    SELF_BITWISE_OR { driver.semantics->use_symbol(driver.semantics->current_symbol); } |
-    SELF_BITWISE_XOR { driver.semantics->use_symbol(driver.semantics->current_symbol); } ;
+assignment_operator: '=' { driver.semantics->assign_value(driver.semantics->current_symbol); 
+        $$=Opcode::NOOP;
+    }| 
+    SELF_UNSIGNED_RIGHT_SHIFT { driver.semantics->use_symbol(driver.semantics->current_symbol); 
+        $$=Opcode::NOOP;
+    } |
+    SELF_RIGHT_SHIFT { driver.semantics->use_symbol(driver.semantics->current_symbol); 
+        $$=Opcode::NOOP;
+    } |
+    SELF_LEFT_SHIFT { driver.semantics->use_symbol(driver.semantics->current_symbol); 
+        $$=Opcode::NOOP;
+    } |
+    SELF_PLUS { driver.semantics->use_symbol(driver.semantics->current_symbol); 
+        $$=Opcode::ADD;
+    } |
+    SELF_MINUS { driver.semantics->use_symbol(driver.semantics->current_symbol); 
+        $$=Opcode::SUB;
+    } |
+    SELF_TIMES { driver.semantics->use_symbol(driver.semantics->current_symbol); 
+        $$=Opcode::MUL;
+    } |
+    SELF_DIV { driver.semantics->use_symbol(driver.semantics->current_symbol); 
+        $$=Opcode::DIV;
+    } |
+    SELF_MOD { driver.semantics->use_symbol(driver.semantics->current_symbol); 
+        $$=Opcode::MOD;
+    } |
+    SELF_BITWISE_AND { driver.semantics->use_symbol(driver.semantics->current_symbol); 
+        $$=Opcode::BITWISE_AND;
+    } |
+    SELF_BITWISE_OR { driver.semantics->use_symbol(driver.semantics->current_symbol); 
+    $$=Opcode::BITWISE_OR;
+    } |
+    SELF_BITWISE_XOR { driver.semantics->use_symbol(driver.semantics->current_symbol); 
+        $$=Opcode::BITWISE_XOR;
+    } ;
 
 /*A general "enough" mathematical expression*/
 /*expression: expression binary_operator opt_unary_operator val   {
@@ -464,7 +489,7 @@ assignable_expression :  new_expression | expression
 
 /*Arguments of a function*/
 obligatory_args: assignable_expression {
-    driver.semantics->args_number ++;
+    driver.semantics->args_number=1;
     } |
     assignable_expression {
         driver.semantics->args_number ++ ;
@@ -473,6 +498,7 @@ args:  obligatory_args {
         driver.semantics->check_args_number();
     } |
     { 
+        driver.semantics->args_number = 0;
         driver.semantics->check_args_number();
     };
 
@@ -536,8 +562,15 @@ statement_declarative: type {
 /*
     Assignment of a variable
 */
-assignment: assignment_operator expression |
-    '=' new_expression {
+assignment: assignment_operator {
+    if($1!=Opcode::NOOP)
+        driver.codeGenerator->addInstruction(Opcode::LDV, driver.semantics->current_symbol);
+        
+} expression {
+        driver.semantics->assign_value(driver.semantics->current_symbol);
+        if($1!=Opcode::NOOP)
+            driver.codeGenerator->addInstruction($1);
+    }| '=' new_expression {
         driver.semantics->assign_value(driver.semantics->current_symbol);
     };
 assignment_statement: var assignment {
@@ -620,7 +653,6 @@ for_statement: FOR '(' statement_declarative ';'{
     driver.codeGenerator->setDefaultBranch(branch);
 }for_updating_statement ')' {driver.codeGenerator->setDefaultBranch("main");} conditional_body {
     const auto& branchList=driver.codeGenerator->branchesStack.back();
-    std::cerr << driver.codeGenerator->generateCode() << std::endl;
     driver.codeGenerator->combineBranches(branchList);
     int jmp_address=driver.semantics->current_address.back();
     driver.semantics->current_address.pop_back();
@@ -631,8 +663,24 @@ for_statement: FOR '(' statement_declarative ';'{
 
 };
 range_for_statement: FOR '(' type ID ':' val ')' conditional_body | FOR '(' error ')' conditional_body;
-while_statement: WHILE '(' condition ')' conditional_body;
-do_while_statement: DO block WHILE '(' condition ')' ';' | DO block WHILE '(' error ')' ';';
+while_statement: WHILE {
+    driver.semantics->current_address.push_back(driver.codeGenerator->currentInstructionOffset());
+    }'(' condition ')' {
+        driver.semantics->current_address.push_back(driver.codeGenerator->addInstruction(javacompiler::Opcode::JMP_Z, 0));
+    } conditional_body {
+        auto src_address=driver.semantics->current_address.back();
+        driver.semantics->current_address.pop_back();
+        driver.codeGenerator->addInstruction(javacompiler::Opcode::JMP, driver.semantics->current_address.back());
+        driver.codeGenerator->setOperand(src_address,driver.codeGenerator->currentInstructionOffset());
+        driver.semantics->current_address.pop_back();
+    };
+do_while_statement: DO {
+    driver.semantics->current_address.push_back(driver.codeGenerator->currentInstructionOffset());
+} block WHILE '(' condition ')' ';' {
+    auto src_address=driver.semantics->current_address.back();
+    driver.semantics->current_address.pop_back();
+    driver.codeGenerator->addInstruction(javacompiler::Opcode::JMP_Z, src_address);
+} ;//| DO block WHILE '(' error ')' ';';
 switch_statement: SWITCH '(' condition ')' '{' switch_body '}';
 case_val: INTEGER | TRUE | FALSE | CHARACTER;
 switch_label: CASE case_val | DEFAULT;
@@ -738,9 +786,7 @@ opt_pkg_declaration: PACKAGE nested_id ';'|;
 pkg_import: IMPORT nested_id ';' pkg_import |;
 type_definitions: interface_definition  type_definitions_more | cls_definition type_definitions_more; 
 type_definitions_more: type_definitions|;
-main_program: opt_pkg_declaration pkg_import type_definitions{
-        std::cout << driver.codeGenerator->generateCode() << std::endl;
-};
+main_program: opt_pkg_declaration pkg_import type_definitions;
 
  /*** END GRAMMAR ***/
 

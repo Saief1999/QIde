@@ -10,27 +10,35 @@
     </message>
 </context>
 <context>
+    <name>CompileOutput</name>
+    <message>
+        <location filename="compileoutput.cpp" line="56"/>
+        <source>Generated Code</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainDocument</name>
     <message>
-        <location filename="maindocument.cpp" line="69"/>
+        <location filename="maindocument.cpp" line="70"/>
         <source>Cannot write file %1:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="maindocument.cpp" line="73"/>
+        <location filename="maindocument.cpp" line="74"/>
         <source>Cannot open file %1 for writing:
 %2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="maindocument.cpp" line="79"/>
-        <location filename="maindocument.cpp" line="104"/>
+        <location filename="maindocument.cpp" line="80"/>
+        <location filename="maindocument.cpp" line="105"/>
         <source>Application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="maindocument.cpp" line="104"/>
+        <location filename="maindocument.cpp" line="105"/>
         <source>Do you want to save changes of </source>
         <translation type="unfinished"></translation>
     </message>

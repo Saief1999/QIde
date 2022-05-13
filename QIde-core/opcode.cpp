@@ -65,6 +65,8 @@ std::string javacompiler::to_string(Opcode opcode)
             return "NOOP";
         case Opcode::POP:
             return "POP";
+        case Opcode::MAIN:
+            return "MAIN";
         default:
             throw std::runtime_error("Unknown opcode");
     }

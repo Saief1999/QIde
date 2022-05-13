@@ -29,7 +29,9 @@ bool Driver::parse_stream(std::istream& in, const std::string& sname)
     CodeGenerator codeGenerator(semantics);
     this->codeGenerator = &codeGenerator;
 
-    return (parser.parse() == 0);
+    auto R=(parser.parse() == 0);
+    binaryCode=codeGenerator.generateCode();
+    return R;
 }
 
 

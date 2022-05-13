@@ -55,6 +55,7 @@ public:
     class JavaLexer* lexer;
     class JavaSemantics *semantics;
     class CodeGenerator *codeGenerator;
+    std::string binaryCode;
 };
 
 } // namespace javacompiler

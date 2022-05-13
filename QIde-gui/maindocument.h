@@ -9,7 +9,7 @@ class MainDocument : public QPlainTextEdit
 {
     Q_OBJECT
 public:
-    explicit MainDocument(QWidget *parent = nullptr);
+    explicit MainDocument(QWidget *parent = nullptr,bool fromOne=true);
 
     QString getTitle();
     void setTitle(QString title);
@@ -41,6 +41,7 @@ private:
     QSyntaxHighlighter *highlighter;
     bool saveFile(QString path);
     QWidget *lineNumberArea;
+    bool fromOne;
 
 
 signals:

@@ -52,7 +52,7 @@ namespace javacompiler {
             symbol_table.emplace_back();
         else {
             int offset=scopeType==scope_type::ANONYMOUS;
-            symbol_table.emplace_back(symbol_table.back().symbolsAlignment.back().offset + offset);
+            symbol_table.emplace_back(offset?symbol_table.back().symbolsAlignment.back().offset:0);
         }
         scopeType=scope_type::ANONYMOUS;
     }
