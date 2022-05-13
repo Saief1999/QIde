@@ -10,13 +10,14 @@
 class LineNumberArea :public QWidget
 {
 public:
-    explicit LineNumberArea(MainDocument *editor) ;
+    explicit LineNumberArea(MainDocument *editor,int offset=1) ;
 
     QSize sizeHint() const override;
 protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
+    int offset;
     MainDocument *codeEditor;
 };
 

@@ -2,6 +2,7 @@
 // Created by ramizouari on 11/05/22.
 //
 #include "opcode.hh"
+#include <stdexcept>
 
 std::string javacompiler::to_string(Opcode opcode)
 {
@@ -48,5 +49,25 @@ std::string javacompiler::to_string(Opcode opcode)
             return "INC";
         case Opcode::DEC:
             return "DEC";
+        case Opcode::NEG:
+            return "NEG";
+        case Opcode::NOT:
+            return "NOT";
+        case Opcode::COMP:
+            return "COMP";
+        case Opcode::JMP:
+            return "JMP";
+        case Opcode::JMP_Z:
+            return "JMP_Z";
+        case Opcode::JMP_NZ:
+            return "JMP_NZ";
+        case Opcode::NOOP:
+            return "NOOP";
+        case Opcode::POP:
+            return "POP";
+        case Opcode::MAIN:
+            return "MAIN";
+        default:
+            throw std::runtime_error("Unknown opcode");
     }
 }

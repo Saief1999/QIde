@@ -52,7 +52,7 @@ namespace javacompiler {
             symbol_table.emplace_back();
         else {
             int offset=scopeType==scope_type::ANONYMOUS;
-            symbol_table.emplace_back(symbol_table.back().symbolsAlignment.back().offset + offset);
+            symbol_table.emplace_back(offset?symbol_table.back().symbolsAlignment.back().offset:0);
         }
         scopeType=scope_type::ANONYMOUS;
     }
@@ -256,6 +256,19 @@ namespace javacompiler {
         auto name=stream.str();
         add_symbol(name,entry);
         return name;
+    }
+
+    void JavaSemantics::setInitialized(const std::string &name) {
+        getEntry(name).is_initialized=true;
+    }
+
+    symbol_entry &JavaSemantics::getEntry(const std::string &name) {
+       auto& entry= std::find_if(symbol_table.rbegin(),symbol_table.rend(),
+                     [&name](const scope &U)
+                     {
+                         return U.symbols.count(name);
+                     })->symbols[name];
+        return entry;
     }
 
 

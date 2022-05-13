@@ -77,7 +77,7 @@ struct scope {
 };
 
 class JavaSemantics {
-    inline static int tmp_counter=0;
+    int tmp_counter=0;
 public:
 
     JavaSemantics(ErrorHandler& errorHandler);
@@ -158,9 +158,13 @@ public:
 
     void init_definitions();
 
+    void setInitialized(const std::string &name);
+    symbol_entry& getEntry(const std::string &name);
+
     void check_args_number();
     int indexOf(const std::string& name) const;
     scope_type scopeType=scope_type::ANONYMOUS;
+    std::vector<int> current_address;
 };
 } // namespace javacompiler
 #endif // SEMANTICS_HH

@@ -2,9 +2,10 @@
 #include "syntax/JavaHighlighter.h"
 #include "LineNumberArea.h"
 
-MainDocument::MainDocument(QWidget *parent)
+MainDocument::MainDocument(QWidget *parent,bool fromOne)
     : QPlainTextEdit{parent},title(""),path("")
 {
+    this->fromOne=fromOne;
     lineNumberArea=new LineNumberArea(this);
     highlighter = new syntax::JavaHighlighter(this->document());
     connect(this->document(), &QTextDocument::modificationChanged, this, &MainDocument::documentWasModified);
@@ -171,7 +172,7 @@ void MainDocument::lineNumberAreaPaintEvent(QPaintEvent *event) {
     QPainter painter(lineNumberArea);
     painter.fillRect(event->rect(), {92,92,128,24});
     QTextBlock block = firstVisibleBlock();
-    int blockNumber = block.blockNumber();
+    int blockNumber = block.blockNumber()-(fromOne?0:1);
     int top = qRound(blockBoundingGeometry(block).translated(contentOffset()).top());
     int bottom = top + qRound(blockBoundingRect(block).height());
     while (block.isValid() && top <= event->rect().bottom()) {

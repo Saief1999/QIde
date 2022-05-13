@@ -3,8 +3,11 @@
 ## Overview
 
 This is a mini java compiler. Written in Flex (Lex) and Bison (Yacc). In addition to a GUI written in QT6 and Qt Widgets
-
+### Warnings & Errors
 ![](./resources/demo.png)
+### Code Generation
+![](./resources/demo2.png)
+
 
 ## Technical Overview
 

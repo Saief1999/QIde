@@ -5,6 +5,8 @@
 #include <iostream>
 #include <fstream>
 #include "error-handling/gui_error_handler.hh"
+#include "QIde-core/CodeGenerator.hh"
+#include "maindocument.h"
 
 //extern "C"
 //{
@@ -44,6 +46,16 @@ bool CompileOutput::runCompilation(QString path) {
 
     try {
         result = driver.parse_stream(infile, filename);
+        QString binCode=QString::fromStdString(driver.binaryCode);
+        QDialog dialog;
+        auto layout=new QVBoxLayout;
+        dialog.setLayout(layout);
+        MainDocument *generatedCode = new MainDocument(&dialog,false);
+        layout->addWidget(generatedCode);
+        generatedCode->setReadOnly(true);
+        dialog.setWindowTitle(tr("Generated Code"));
+        generatedCode->setPlainText(binCode);
+        dialog.exec();
     }
     catch(std::exception &e)
     {
