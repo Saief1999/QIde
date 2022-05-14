@@ -15,12 +15,12 @@ Terminals unused in grammar
 
 Rules useless in grammar
 
-  263 var_store: var
+  264 var_store: var
 
-  264 type_save: type
+  265 type_save: type
 
-  265 range_for_statement: "for" '(' type "identifier" ':' val ')' conditional_body
-  266                    | "for" '(' error ')' conditional_body
+  266 range_for_statement: "for" '(' type "identifier" ':' val ')' conditional_body
+  267                    | "for" '(' error ')' conditional_body
 
 
 Grammar
@@ -282,145 +282,147 @@ Grammar
 
   173 $@18: %empty
 
-  174 for_statement: "for" '(' statement_declarative ';' $@16 condition ';' $@17 for_updating_statement ')' $@18 conditional_body
+  174 $@19: %empty
 
-  175 $@19: %empty
+  175 for_statement: "for" $@16 '(' statement_declarative ';' $@17 condition ';' $@18 for_updating_statement ')' $@19 conditional_body
 
   176 $@20: %empty
 
-  177 while_statement: "while" $@19 '(' condition ')' $@20 conditional_body
+  177 $@21: %empty
 
-  178 $@21: %empty
+  178 while_statement: "while" $@20 '(' condition ')' $@21 conditional_body
 
-  179 do_while_statement: "do" $@21 block "while" '(' condition ')' ';'
+  179 $@22: %empty
 
-  180 switch_statement: "switch" '(' condition ')' '{' switch_body '}'
+  180 do_while_statement: "do" $@22 block "while" '(' condition ')' ';'
 
-  181 case_val: INTEGER
-  182         | "true"
-  183         | "false"
-  184         | CHARACTER
+  181 switch_statement: "switch" '(' condition ')' '{' switch_body '}'
 
-  185 switch_label: "case" case_val
-  186             | "default"
+  182 case_val: INTEGER
+  183         | "true"
+  184         | "false"
+  185         | CHARACTER
 
-  187 case_block: switch_label ':' opt_statement_seq
+  186 switch_label: "case" case_val
+  187             | "default"
 
-  188 switch_body: case_block switch_body
-  189            | %empty
+  188 case_block: switch_label ':' opt_statement_seq
 
-  190 opt_return_expression: new_expression
-  191                      | expression
-  192                      | %empty
+  189 switch_body: case_block switch_body
+  190            | %empty
 
-  193 return_statement: "return" opt_return_expression
+  191 opt_return_expression: new_expression
+  192                      | expression
+  193                      | %empty
 
-  194 cls_modifier: PUBLIC
-  195             | %empty
+  194 return_statement: "return" opt_return_expression
 
-  196 $@22: %empty
+  195 cls_modifier: PUBLIC
+  196             | %empty
 
-  197 cls_attr_more: ',' "identifier" $@22 opt_assignment cls_attr_more
-  198              | ';'
-  199              | error ';'
+  197 $@23: %empty
 
-  200 $@23: %empty
+  198 cls_attr_more: ',' "identifier" $@23 opt_assignment cls_attr_more
+  199              | ';'
+  200              | error ';'
 
-  201 cls_attr_sign: opt_assignment $@23 cls_attr_more
+  201 $@24: %empty
 
-  202 $@24: %empty
+  202 cls_attr_sign: opt_assignment $@24 cls_attr_more
 
   203 $@25: %empty
 
-  204 cls_attr_sign: '(' $@24 formal_args ')' $@25 block
-  205              | '(' error ')' block
+  204 $@26: %empty
 
-  206 fn_access_modifier: PRIVATE
-  207                   | PUBLIC
-  208                   | PROTECTED
+  205 cls_attr_sign: '(' $@25 formal_args ')' $@26 block
+  206              | '(' error ')' block
 
-  209 fn_static_modifier: "static"
+  207 fn_access_modifier: PRIVATE
+  208                   | PUBLIC
+  209                   | PROTECTED
 
-  210 fn_opt_static_modifier: fn_static_modifier
-  211                       | %empty
+  210 fn_static_modifier: "static"
 
-  212 fn_opt_access_modifier: fn_access_modifier
-  213                       | %empty
+  211 fn_opt_static_modifier: fn_static_modifier
+  212                       | %empty
 
-  214 fn_modifier: fn_access_modifier fn_opt_static_modifier
-  215            | fn_static_modifier fn_opt_access_modifier
-  216            | %empty
+  213 fn_opt_access_modifier: fn_access_modifier
+  214                       | %empty
 
-  217 fn_declaration: fn_modifier type "identifier" '(' formal_args ')'
-  218               | fn_modifier type "identifier" '(' error ')'
+  215 fn_modifier: fn_access_modifier fn_opt_static_modifier
+  216            | fn_static_modifier fn_opt_access_modifier
+  217            | %empty
 
-  219 cls_declaration: cls_modifier "class" "identifier"
-  220                | cls_modifier "class" error
+  218 fn_declaration: fn_modifier type "identifier" '(' formal_args ')'
+  219               | fn_modifier type "identifier" '(' error ')'
 
-  221 cls_info_opt_more: cls_info
-  222                  | %empty
+  220 cls_declaration: cls_modifier "class" "identifier"
+  221                | cls_modifier "class" error
 
-  223 cls_info: "abstract" fn_declaration ';' cls_info_opt_more
+  222 cls_info_opt_more: cls_info
+  223                  | %empty
 
-  224 $@26: %empty
+  224 cls_info: "abstract" fn_declaration ';' cls_info_opt_more
 
-  225 cls_info: fn_modifier type "identifier" $@26 cls_attr_sign cls_info_opt_more
-  226         | ';' cls_info_opt_more
+  225 $@27: %empty
 
-  227 opt_cls_info: cls_info
-  228             | %empty
+  226 cls_info: fn_modifier type "identifier" $@27 cls_attr_sign cls_info_opt_more
+  227         | ';' cls_info_opt_more
 
-  229 opt_extends: "extends" nested_id
-  230            | %empty
+  228 opt_cls_info: cls_info
+  229             | %empty
 
-  231 more_interface_list: ',' interface_list
-  232                    | %empty
+  230 opt_extends: "extends" nested_id
+  231            | %empty
 
-  233 interface_list: nested_id more_interface_list
+  232 more_interface_list: ',' interface_list
+  233                    | %empty
 
-  234 opt_implements: "implements" interface_list
-  235               | %empty
+  234 interface_list: nested_id more_interface_list
 
-  236 opening_bracket: '{'
+  235 opt_implements: "implements" interface_list
+  236               | %empty
 
-  237 closing_bracket: '}'
+  237 opening_bracket: '{'
 
-  238 cls_definition: cls_declaration opt_extends opt_implements opening_bracket opt_cls_info closing_bracket
-  239               | cls_declaration error '{' opt_cls_info '}'
+  238 closing_bracket: '}'
 
-  240 opt_abstract: "abstract"
-  241             | %empty
+  239 cls_definition: cls_declaration opt_extends opt_implements opening_bracket opt_cls_info closing_bracket
+  240               | cls_declaration error '{' opt_cls_info '}'
 
-  242 interface_info: opt_abstract fn_declaration ';' interface_info
-  243               | ';'
-  244               | error ';'
-  245               | error block
+  241 opt_abstract: "abstract"
+  242             | %empty
 
-  246 opt_interface_info: interface_info
-  247                   | %empty
+  243 interface_info: opt_abstract fn_declaration ';' interface_info
+  244               | ';'
+  245               | error ';'
+  246               | error block
 
-  248 interface_declaration: cls_modifier "interface" "identifier"
-  249                      | cls_modifier "interface" error
+  247 opt_interface_info: interface_info
+  248                   | %empty
 
-  250 opt_interface_extends: "extends" interface_list
-  251                      | %empty
+  249 interface_declaration: cls_modifier "interface" "identifier"
+  250                      | cls_modifier "interface" error
 
-  252 interface_definition: interface_declaration opt_interface_extends '{' opt_interface_info '}'
-  253                     | interface_declaration error '{' opt_interface_info '}'
+  251 opt_interface_extends: "extends" interface_list
+  252                      | %empty
 
-  254 opt_pkg_declaration: "package" nested_id ';'
-  255                    | %empty
+  253 interface_definition: interface_declaration opt_interface_extends '{' opt_interface_info '}'
+  254                     | interface_declaration error '{' opt_interface_info '}'
 
-  256 pkg_import: "import" nested_id ';' pkg_import
-  257           | %empty
+  255 opt_pkg_declaration: "package" nested_id ';'
+  256                    | %empty
 
-  258 type_definitions: interface_definition type_definitions_more
-  259                 | cls_definition type_definitions_more
+  257 pkg_import: "import" nested_id ';' pkg_import
+  258           | %empty
 
-  260 type_definitions_more: type_definitions
-  261                      | %empty
+  259 type_definitions: interface_definition type_definitions_more
+  260                 | cls_definition type_definitions_more
 
-  262 main_program: opt_pkg_declaration pkg_import type_definitions
+  261 type_definitions_more: type_definitions
+  262                      | %empty
+
+  263 main_program: opt_pkg_declaration pkg_import type_definitions
 
 
 Terminals, with rules where they appear
@@ -429,50 +431,50 @@ Terminals, with rules where they appear
     '!' (33) 40
     '%' (37) 25
     '&' (38) 30
-    '(' (40) 50 78 93 103 114 167 168 174 177 179 180 204 205 217 218
-    ')' (41) 50 78 93 103 114 167 168 174 177 179 180 204 205 217 218
+    '(' (40) 50 78 93 103 114 167 168 175 178 180 181 205 206 218 219
+    ')' (41) 50 78 93 103 114 167 168 175 178 180 181 205 206 218 219
     '*' (42) 23
     '+' (43) 26 41
-    ',' (44) 121 127 136 197 231
+    ',' (44) 121 127 136 198 232
     '-' (45) 27 42
     '.' (46) 2 4 51 62 98 110
     '/' (47) 24
-    ':' (58) 187
-    ';' (59) 146 152 153 154 174 179 198 199 223 226 242 243 244 254 256
+    ':' (58) 188
+    ';' (59) 146 152 153 154 175 180 199 200 224 227 243 244 245 255 257
     '<' (60) 16
     '=' (61) 64 131 142
     '>' (62) 17
     '[' (91) 12 99 115
     ']' (93) 12 99 115
     '^' (94) 31
-    '{' (123) 116 180 236 239 252 253
+    '{' (123) 116 181 237 240 253 254
     '|' (124) 32
-    '}' (125) 116 180 237 239 252 253
+    '}' (125) 116 181 238 240 253 254
     '~' (126) 43
-    error (256) 154 168 199 205 218 220 239 244 245 249 253
-    "identifier" <text> (258) 2 3 7 92 98 127 128 135 197 217 218 219 225 248
-    CHARACTER <character> (259) 60 184
+    error (256) 154 168 200 206 219 221 240 245 246 250 254
+    "identifier" <text> (258) 2 3 7 92 98 127 128 135 198 218 219 220 226 249
+    CHARACTER <character> (259) 60 185
     "string" <text> (260) 61
-    INTEGER <num> (261) 58 181
+    INTEGER <num> (261) 58 182
     REAL <real> (262) 59
     "++" (263) 46
     "--" (264) 47
-    "class" (265) 219 220
+    "class" (265) 220 221
     "[]" (266) 10 100 116
-    "return" (267) 193
-    "interface" (268) 248 249
-    "abstract" (269) 223 240
-    "static" (270) 209
-    "extends" (271) 229 250
-    "implements" (272) 234
+    "return" (267) 194
+    "interface" (268) 249 250
+    "abstract" (269) 224 241
+    "static" (270) 210
+    "extends" (271) 230 251
+    "implements" (272) 235
     "if" (273) 167 168
     "else" (274) 163
-    "for" (275) 174
-    "while" (276) 177 179
-    "do" (277) 179
-    "switch" (278) 180
-    "case" (279) 185
-    "default" (280) 186
+    "for" (275) 175
+    "while" (276) 178 180
+    "do" (277) 180
+    "switch" (278) 181
+    "case" (279) 186
+    "default" (280) 187
     "<<" (281) 21
     ">>" (282) 22
     ">>>" (283) 20
@@ -488,10 +490,10 @@ Terminals, with rules where they appear
     "new" (293) 113
     "&&" (294) 28 87
     "||" (295) 29 89
-    "true" (296) 56 182
-    "false" (297) 57 183
-    "package" (298) 254
-    "import" (299) 256
+    "true" (296) 56 183
+    "false" (297) 57 184
+    "package" (298) 255
+    "import" (299) 257
     SELF_PLUS (300) 68
     SELF_MINUS (301) 69
     SELF_DIV (302) 71
@@ -501,11 +503,11 @@ Terminals, with rules where they appear
     SELF_BITWISE_OR (306) 74
     SELF_BITWISE_XOR (307) 75
     LOWEST (308)
-    PUBLIC (309) 194 207
+    PUBLIC (309) 195 208
     "public" (310)
-    PRIVATE (311) 206
+    PRIVATE (311) 207
     "private" (312)
-    PROTECTED (313) 208
+    PROTECTED (313) 209
     "protected" (314)
 
 
@@ -518,7 +520,7 @@ Nonterminals, with rules where they appear
         on right: 0
     nested_id <text> (85)
         on left: 2 3
-        on right: 2 9 113 229 233 254 256
+        on right: 2 9 113 230 234 255 257
     opt_var_access <text> (86)
         on left: 4 5
         on right: 7
@@ -533,7 +535,7 @@ Nonterminals, with rules where they appear
         on right: 53
     type <text> (90)
         on left: 9
-        on right: 127 128 139 217 218 225
+        on right: 127 128 139 218 219 226
     opt_array_type <text> (91)
         on left: 10 11
         on right: 9 10 115 116 127 128 135
@@ -599,7 +601,7 @@ Nonterminals, with rules where they appear
         on right: 141
     expression (112)
         on left: 76
-        on right: 12 93 99 105 109 115 118 141 160 191
+        on right: 12 93 99 105 109 115 118 141 160 192
     unary_expression (113)
         on left: 77 78
         on right: 79 80
@@ -647,7 +649,7 @@ Nonterminals, with rules where they appear
         on right: 99 103
     new_expression (128)
         on left: 113
-        on right: 94 117 142 190
+        on right: 94 117 142 191
     new_initialisation (129)
         on left: 114 115 116
         on right: 113
@@ -674,10 +676,10 @@ Nonterminals, with rules where they appear
         on right: 127
     formal_args (137)
         on left: 129 130
-        on right: 204 217
+        on right: 205 218
     opt_assignment (138)
         on left: 131 132
-        on right: 135 197 201
+        on right: 135 198 202
     var_declaration_body (139)
         on left: 135
         on right: 136 137
@@ -692,7 +694,7 @@ Nonterminals, with rules where they appear
         on right: 96 100 136 139
     statement_declarative (143)
         on left: 139
-        on right: 174
+        on right: 175
     $@12 (144)
         on left: 138
         on right: 139
@@ -713,19 +715,19 @@ Nonterminals, with rules where they appear
         on right: 157 161
     opt_statement_seq (150)
         on left: 155 156
-        on right: 157 158 159 187
+        on right: 157 158 159 188
     statement_seq (151)
         on left: 157 158
         on right: 155
     block (152)
         on left: 159
-        on right: 158 162 179 204 205 245
+        on right: 158 162 180 205 206 246
     condition (153)
         on left: 160
-        on right: 167 174 177 179 180
+        on right: 167 175 178 180 181
     conditional_body (154)
         on left: 161 162
-        on right: 163 167 168 174 177
+        on right: 163 167 168 175 178
     opt_else_statement (155)
         on left: 163 164
         on right: 167 168
@@ -740,162 +742,165 @@ Nonterminals, with rules where they appear
         on right: 167
     for_updating_statement (159)
         on left: 169 170
-        on right: 174
+        on right: 175
     for_statement (160)
-        on left: 174
+        on left: 175
         on right: 147
     $@16 (161)
         on left: 171
-        on right: 174
+        on right: 175
     $@17 (162)
         on left: 172
-        on right: 174
+        on right: 175
     $@18 (163)
         on left: 173
-        on right: 174
-    while_statement (164)
-        on left: 177
+        on right: 175
+    $@19 (164)
+        on left: 174
+        on right: 175
+    while_statement (165)
+        on left: 178
         on right: 149
-    $@19 (165)
-        on left: 175
-        on right: 177
     $@20 (166)
         on left: 176
-        on right: 177
-    do_while_statement (167)
-        on left: 179
-        on right: 150
-    $@21 (168)
-        on left: 178
-        on right: 179
-    switch_statement (169)
+        on right: 178
+    $@21 (167)
+        on left: 177
+        on right: 178
+    do_while_statement (168)
         on left: 180
+        on right: 150
+    $@22 (169)
+        on left: 179
+        on right: 180
+    switch_statement (170)
+        on left: 181
         on right: 151
-    case_val (170)
-        on left: 181 182 183 184
-        on right: 185
-    switch_label (171)
-        on left: 185 186
-        on right: 187
-    case_block (172)
-        on left: 187
+    case_val (171)
+        on left: 182 183 184 185
+        on right: 186
+    switch_label (172)
+        on left: 186 187
         on right: 188
-    switch_body (173)
-        on left: 188 189
-        on right: 180 188
-    opt_return_expression (174)
-        on left: 190 191 192
-        on right: 193
-    return_statement (175)
-        on left: 193
+    case_block (173)
+        on left: 188
+        on right: 189
+    switch_body (174)
+        on left: 189 190
+        on right: 181 189
+    opt_return_expression (175)
+        on left: 191 192 193
+        on right: 194
+    return_statement (176)
+        on left: 194
         on right: 152
-    cls_modifier (176)
-        on left: 194 195
-        on right: 219 220 248 249
-    cls_attr_more (177)
-        on left: 197 198 199
-        on right: 197 201
-    $@22 (178)
-        on left: 196
-        on right: 197
-    cls_attr_sign (179)
-        on left: 201 204 205
-        on right: 225
-    $@23 (180)
-        on left: 200
-        on right: 201
+    cls_modifier (177)
+        on left: 195 196
+        on right: 220 221 249 250
+    cls_attr_more (178)
+        on left: 198 199 200
+        on right: 198 202
+    $@23 (179)
+        on left: 197
+        on right: 198
+    cls_attr_sign (180)
+        on left: 202 205 206
+        on right: 226
     $@24 (181)
-        on left: 202
-        on right: 204
+        on left: 201
+        on right: 202
     $@25 (182)
         on left: 203
-        on right: 204
-    fn_access_modifier (183)
-        on left: 206 207 208
-        on right: 212 214
-    fn_static_modifier (184)
-        on left: 209
-        on right: 210 215
-    fn_opt_static_modifier (185)
-        on left: 210 211
-        on right: 214
-    fn_opt_access_modifier (186)
-        on left: 212 213
+        on right: 205
+    $@26 (183)
+        on left: 204
+        on right: 205
+    fn_access_modifier (184)
+        on left: 207 208 209
+        on right: 213 215
+    fn_static_modifier (185)
+        on left: 210
+        on right: 211 216
+    fn_opt_static_modifier (186)
+        on left: 211 212
         on right: 215
-    fn_modifier (187)
-        on left: 214 215 216
-        on right: 217 218 225
-    fn_declaration (188)
-        on left: 217 218
-        on right: 223 242
-    cls_declaration (189)
-        on left: 219 220
-        on right: 238 239
-    cls_info_opt_more (190)
-        on left: 221 222
-        on right: 223 225 226
-    cls_info (191)
-        on left: 223 225 226
-        on right: 221 227
-    $@26 (192)
-        on left: 224
-        on right: 225
-    opt_cls_info (193)
-        on left: 227 228
-        on right: 238 239
-    opt_extends (194)
-        on left: 229 230
-        on right: 238
-    more_interface_list (195)
-        on left: 231 232
-        on right: 233
-    interface_list (196)
-        on left: 233
-        on right: 231 234 250
-    opt_implements (197)
-        on left: 234 235
-        on right: 238
-    opening_bracket (198)
-        on left: 236
-        on right: 159 238
-    closing_bracket (199)
+    fn_opt_access_modifier (187)
+        on left: 213 214
+        on right: 216
+    fn_modifier (188)
+        on left: 215 216 217
+        on right: 218 219 226
+    fn_declaration (189)
+        on left: 218 219
+        on right: 224 243
+    cls_declaration (190)
+        on left: 220 221
+        on right: 239 240
+    cls_info_opt_more (191)
+        on left: 222 223
+        on right: 224 226 227
+    cls_info (192)
+        on left: 224 226 227
+        on right: 222 228
+    $@27 (193)
+        on left: 225
+        on right: 226
+    opt_cls_info (194)
+        on left: 228 229
+        on right: 239 240
+    opt_extends (195)
+        on left: 230 231
+        on right: 239
+    more_interface_list (196)
+        on left: 232 233
+        on right: 234
+    interface_list (197)
+        on left: 234
+        on right: 232 235 251
+    opt_implements (198)
+        on left: 235 236
+        on right: 239
+    opening_bracket (199)
         on left: 237
-        on right: 159 238
-    cls_definition (200)
-        on left: 238 239
+        on right: 159 239
+    closing_bracket (200)
+        on left: 238
+        on right: 159 239
+    cls_definition (201)
+        on left: 239 240
+        on right: 260
+    opt_abstract (202)
+        on left: 241 242
+        on right: 243
+    interface_info (203)
+        on left: 243 244 245 246
+        on right: 243 247
+    opt_interface_info (204)
+        on left: 247 248
+        on right: 253 254
+    interface_declaration (205)
+        on left: 249 250
+        on right: 253 254
+    opt_interface_extends (206)
+        on left: 251 252
+        on right: 253
+    interface_definition (207)
+        on left: 253 254
         on right: 259
-    opt_abstract (201)
-        on left: 240 241
-        on right: 242
-    interface_info (202)
-        on left: 242 243 244 245
-        on right: 242 246
-    opt_interface_info (203)
-        on left: 246 247
-        on right: 252 253
-    interface_declaration (204)
-        on left: 248 249
-        on right: 252 253
-    opt_interface_extends (205)
-        on left: 250 251
-        on right: 252
-    interface_definition (206)
-        on left: 252 253
-        on right: 258
-    opt_pkg_declaration (207)
-        on left: 254 255
-        on right: 262
-    pkg_import (208)
-        on left: 256 257
-        on right: 256 262
-    type_definitions (209)
-        on left: 258 259
-        on right: 260 262
-    type_definitions_more (210)
-        on left: 260 261
-        on right: 258 259
-    main_program (211)
-        on left: 262
+    opt_pkg_declaration (208)
+        on left: 255 256
+        on right: 263
+    pkg_import (209)
+        on left: 257 258
+        on right: 257 263
+    type_definitions (210)
+        on left: 259 260
+        on right: 261 263
+    type_definitions_more (211)
+        on left: 261 262
+        on right: 259 260
+    main_program (212)
+        on left: 263
         on right: 1
 
 
@@ -905,7 +910,7 @@ State 0
 
     "package"  shift, and go to state 1
 
-    $default  reduce using rule 255 (opt_pkg_declaration)
+    $default  reduce using rule 256 (opt_pkg_declaration)
 
     start                go to state 2
     opt_pkg_declaration  go to state 3
@@ -914,7 +919,7 @@ State 0
 
 State 1
 
-  254 opt_pkg_declaration: "package" • nested_id ';'
+  255 opt_pkg_declaration: "package" • nested_id ';'
 
     "identifier"  shift, and go to state 5
 
@@ -930,11 +935,11 @@ State 2
 
 State 3
 
-  262 main_program: opt_pkg_declaration • pkg_import type_definitions
+  263 main_program: opt_pkg_declaration • pkg_import type_definitions
 
     "import"  shift, and go to state 8
 
-    $default  reduce using rule 257 (pkg_import)
+    $default  reduce using rule 258 (pkg_import)
 
     pkg_import  go to state 9
 
@@ -958,7 +963,7 @@ State 5
 
 State 6
 
-  254 opt_pkg_declaration: "package" nested_id • ';'
+  255 opt_pkg_declaration: "package" nested_id • ';'
 
     ';'  shift, and go to state 11
 
@@ -972,7 +977,7 @@ State 7
 
 State 8
 
-  256 pkg_import: "import" • nested_id ';' pkg_import
+  257 pkg_import: "import" • nested_id ';' pkg_import
 
     "identifier"  shift, and go to state 5
 
@@ -981,11 +986,11 @@ State 8
 
 State 9
 
-  262 main_program: opt_pkg_declaration pkg_import • type_definitions
+  263 main_program: opt_pkg_declaration pkg_import • type_definitions
 
     PUBLIC  shift, and go to state 13
 
-    $default  reduce using rule 195 (cls_modifier)
+    $default  reduce using rule 196 (cls_modifier)
 
     cls_modifier           go to state 14
     cls_declaration        go to state 15
@@ -1006,31 +1011,31 @@ State 10
 
 State 11
 
-  254 opt_pkg_declaration: "package" nested_id ';' •
+  255 opt_pkg_declaration: "package" nested_id ';' •
 
-    $default  reduce using rule 254 (opt_pkg_declaration)
+    $default  reduce using rule 255 (opt_pkg_declaration)
 
 
 State 12
 
-  256 pkg_import: "import" nested_id • ';' pkg_import
+  257 pkg_import: "import" nested_id • ';' pkg_import
 
     ';'  shift, and go to state 21
 
 
 State 13
 
-  194 cls_modifier: PUBLIC •
+  195 cls_modifier: PUBLIC •
 
-    $default  reduce using rule 194 (cls_modifier)
+    $default  reduce using rule 195 (cls_modifier)
 
 
 State 14
 
-  219 cls_declaration: cls_modifier • "class" "identifier"
-  220                | cls_modifier • "class" error
-  248 interface_declaration: cls_modifier • "interface" "identifier"
-  249                      | cls_modifier • "interface" error
+  220 cls_declaration: cls_modifier • "class" "identifier"
+  221                | cls_modifier • "class" error
+  249 interface_declaration: cls_modifier • "interface" "identifier"
+  250                      | cls_modifier • "interface" error
 
     "class"      shift, and go to state 22
     "interface"  shift, and go to state 23
@@ -1038,26 +1043,26 @@ State 14
 
 State 15
 
-  238 cls_definition: cls_declaration • opt_extends opt_implements opening_bracket opt_cls_info closing_bracket
-  239               | cls_declaration • error '{' opt_cls_info '}'
+  239 cls_definition: cls_declaration • opt_extends opt_implements opening_bracket opt_cls_info closing_bracket
+  240               | cls_declaration • error '{' opt_cls_info '}'
 
     error      shift, and go to state 24
     "extends"  shift, and go to state 25
 
-    "implements"  reduce using rule 230 (opt_extends)
-    '{'           reduce using rule 230 (opt_extends)
+    "implements"  reduce using rule 231 (opt_extends)
+    '{'           reduce using rule 231 (opt_extends)
 
     opt_extends  go to state 26
 
 
 State 16
 
-  259 type_definitions: cls_definition • type_definitions_more
+  260 type_definitions: cls_definition • type_definitions_more
 
     PUBLIC  shift, and go to state 13
 
-    "end of file"  reduce using rule 261 (type_definitions_more)
-    $default       reduce using rule 195 (cls_modifier)
+    "end of file"  reduce using rule 262 (type_definitions_more)
+    $default       reduce using rule 196 (cls_modifier)
 
     cls_modifier           go to state 14
     cls_declaration        go to state 15
@@ -1070,25 +1075,25 @@ State 16
 
 State 17
 
-  252 interface_definition: interface_declaration • opt_interface_extends '{' opt_interface_info '}'
-  253                     | interface_declaration • error '{' opt_interface_info '}'
+  253 interface_definition: interface_declaration • opt_interface_extends '{' opt_interface_info '}'
+  254                     | interface_declaration • error '{' opt_interface_info '}'
 
     error      shift, and go to state 29
     "extends"  shift, and go to state 30
 
-    '{'  reduce using rule 251 (opt_interface_extends)
+    '{'  reduce using rule 252 (opt_interface_extends)
 
     opt_interface_extends  go to state 31
 
 
 State 18
 
-  258 type_definitions: interface_definition • type_definitions_more
+  259 type_definitions: interface_definition • type_definitions_more
 
     PUBLIC  shift, and go to state 13
 
-    "end of file"  reduce using rule 261 (type_definitions_more)
-    $default       reduce using rule 195 (cls_modifier)
+    "end of file"  reduce using rule 262 (type_definitions_more)
+    $default       reduce using rule 196 (cls_modifier)
 
     cls_modifier           go to state 14
     cls_declaration        go to state 15
@@ -1101,9 +1106,9 @@ State 18
 
 State 19
 
-  262 main_program: opt_pkg_declaration pkg_import type_definitions •
+  263 main_program: opt_pkg_declaration pkg_import type_definitions •
 
-    $default  reduce using rule 262 (main_program)
+    $default  reduce using rule 263 (main_program)
 
 
 State 20
@@ -1115,19 +1120,19 @@ State 20
 
 State 21
 
-  256 pkg_import: "import" nested_id ';' • pkg_import
+  257 pkg_import: "import" nested_id ';' • pkg_import
 
     "import"  shift, and go to state 8
 
-    $default  reduce using rule 257 (pkg_import)
+    $default  reduce using rule 258 (pkg_import)
 
     pkg_import  go to state 33
 
 
 State 22
 
-  219 cls_declaration: cls_modifier "class" • "identifier"
-  220                | cls_modifier "class" • error
+  220 cls_declaration: cls_modifier "class" • "identifier"
+  221                | cls_modifier "class" • error
 
     error         shift, and go to state 34
     "identifier"  shift, and go to state 35
@@ -1135,8 +1140,8 @@ State 22
 
 State 23
 
-  248 interface_declaration: cls_modifier "interface" • "identifier"
-  249                      | cls_modifier "interface" • error
+  249 interface_declaration: cls_modifier "interface" • "identifier"
+  250                      | cls_modifier "interface" • error
 
     error         shift, and go to state 36
     "identifier"  shift, and go to state 37
@@ -1144,14 +1149,14 @@ State 23
 
 State 24
 
-  239 cls_definition: cls_declaration error • '{' opt_cls_info '}'
+  240 cls_definition: cls_declaration error • '{' opt_cls_info '}'
 
     '{'  shift, and go to state 38
 
 
 State 25
 
-  229 opt_extends: "extends" • nested_id
+  230 opt_extends: "extends" • nested_id
 
     "identifier"  shift, and go to state 5
 
@@ -1160,39 +1165,39 @@ State 25
 
 State 26
 
-  238 cls_definition: cls_declaration opt_extends • opt_implements opening_bracket opt_cls_info closing_bracket
+  239 cls_definition: cls_declaration opt_extends • opt_implements opening_bracket opt_cls_info closing_bracket
 
     "implements"  shift, and go to state 40
 
-    $default  reduce using rule 235 (opt_implements)
+    $default  reduce using rule 236 (opt_implements)
 
     opt_implements  go to state 41
 
 
 State 27
 
-  260 type_definitions_more: type_definitions •
+  261 type_definitions_more: type_definitions •
 
-    $default  reduce using rule 260 (type_definitions_more)
+    $default  reduce using rule 261 (type_definitions_more)
 
 
 State 28
 
-  259 type_definitions: cls_definition type_definitions_more •
+  260 type_definitions: cls_definition type_definitions_more •
 
-    $default  reduce using rule 259 (type_definitions)
+    $default  reduce using rule 260 (type_definitions)
 
 
 State 29
 
-  253 interface_definition: interface_declaration error • '{' opt_interface_info '}'
+  254 interface_definition: interface_declaration error • '{' opt_interface_info '}'
 
     '{'  shift, and go to state 42
 
 
 State 30
 
-  250 opt_interface_extends: "extends" • interface_list
+  251 opt_interface_extends: "extends" • interface_list
 
     "identifier"  shift, and go to state 5
 
@@ -1202,56 +1207,56 @@ State 30
 
 State 31
 
-  252 interface_definition: interface_declaration opt_interface_extends • '{' opt_interface_info '}'
+  253 interface_definition: interface_declaration opt_interface_extends • '{' opt_interface_info '}'
 
     '{'  shift, and go to state 45
 
 
 State 32
 
-  258 type_definitions: interface_definition type_definitions_more •
+  259 type_definitions: interface_definition type_definitions_more •
 
-    $default  reduce using rule 258 (type_definitions)
+    $default  reduce using rule 259 (type_definitions)
 
 
 State 33
 
-  256 pkg_import: "import" nested_id ';' pkg_import •
+  257 pkg_import: "import" nested_id ';' pkg_import •
 
-    $default  reduce using rule 256 (pkg_import)
+    $default  reduce using rule 257 (pkg_import)
 
 
 State 34
 
-  220 cls_declaration: cls_modifier "class" error •
+  221 cls_declaration: cls_modifier "class" error •
 
-    $default  reduce using rule 220 (cls_declaration)
+    $default  reduce using rule 221 (cls_declaration)
 
 
 State 35
 
-  219 cls_declaration: cls_modifier "class" "identifier" •
+  220 cls_declaration: cls_modifier "class" "identifier" •
 
-    $default  reduce using rule 219 (cls_declaration)
+    $default  reduce using rule 220 (cls_declaration)
 
 
 State 36
 
-  249 interface_declaration: cls_modifier "interface" error •
+  250 interface_declaration: cls_modifier "interface" error •
 
-    $default  reduce using rule 249 (interface_declaration)
+    $default  reduce using rule 250 (interface_declaration)
 
 
 State 37
 
-  248 interface_declaration: cls_modifier "interface" "identifier" •
+  249 interface_declaration: cls_modifier "interface" "identifier" •
 
-    $default  reduce using rule 248 (interface_declaration)
+    $default  reduce using rule 249 (interface_declaration)
 
 
 State 38
 
-  239 cls_definition: cls_declaration error '{' • opt_cls_info '}'
+  240 cls_definition: cls_declaration error '{' • opt_cls_info '}'
 
     "abstract"  shift, and go to state 46
     "static"    shift, and go to state 47
@@ -1260,8 +1265,8 @@ State 38
     PROTECTED   shift, and go to state 50
     ';'         shift, and go to state 51
 
-    '}'       reduce using rule 228 (opt_cls_info)
-    $default  reduce using rule 216 (fn_modifier)
+    '}'       reduce using rule 229 (opt_cls_info)
+    $default  reduce using rule 217 (fn_modifier)
 
     fn_access_modifier  go to state 52
     fn_static_modifier  go to state 53
@@ -1272,14 +1277,14 @@ State 38
 
 State 39
 
-  229 opt_extends: "extends" nested_id •
+  230 opt_extends: "extends" nested_id •
 
-    $default  reduce using rule 229 (opt_extends)
+    $default  reduce using rule 230 (opt_extends)
 
 
 State 40
 
-  234 opt_implements: "implements" • interface_list
+  235 opt_implements: "implements" • interface_list
 
     "identifier"  shift, and go to state 5
 
@@ -1289,7 +1294,7 @@ State 40
 
 State 41
 
-  238 cls_definition: cls_declaration opt_extends opt_implements • opening_bracket opt_cls_info closing_bracket
+  239 cls_definition: cls_declaration opt_extends opt_implements • opening_bracket opt_cls_info closing_bracket
 
     '{'  shift, and go to state 58
 
@@ -1298,18 +1303,18 @@ State 41
 
 State 42
 
-  253 interface_definition: interface_declaration error '{' • opt_interface_info '}'
+  254 interface_definition: interface_declaration error '{' • opt_interface_info '}'
 
     error       shift, and go to state 60
     "abstract"  shift, and go to state 61
     ';'         shift, and go to state 62
 
-    "identifier"  reduce using rule 241 (opt_abstract)
-    "static"      reduce using rule 241 (opt_abstract)
-    PUBLIC        reduce using rule 241 (opt_abstract)
-    PRIVATE       reduce using rule 241 (opt_abstract)
-    PROTECTED     reduce using rule 241 (opt_abstract)
-    '}'           reduce using rule 247 (opt_interface_info)
+    "identifier"  reduce using rule 242 (opt_abstract)
+    "static"      reduce using rule 242 (opt_abstract)
+    PUBLIC        reduce using rule 242 (opt_abstract)
+    PRIVATE       reduce using rule 242 (opt_abstract)
+    PROTECTED     reduce using rule 242 (opt_abstract)
+    '}'           reduce using rule 248 (opt_interface_info)
 
     opt_abstract        go to state 63
     interface_info      go to state 64
@@ -1318,36 +1323,36 @@ State 42
 
 State 43
 
-  233 interface_list: nested_id • more_interface_list
+  234 interface_list: nested_id • more_interface_list
 
     ','  shift, and go to state 66
 
-    $default  reduce using rule 232 (more_interface_list)
+    $default  reduce using rule 233 (more_interface_list)
 
     more_interface_list  go to state 67
 
 
 State 44
 
-  250 opt_interface_extends: "extends" interface_list •
+  251 opt_interface_extends: "extends" interface_list •
 
-    $default  reduce using rule 250 (opt_interface_extends)
+    $default  reduce using rule 251 (opt_interface_extends)
 
 
 State 45
 
-  252 interface_definition: interface_declaration opt_interface_extends '{' • opt_interface_info '}'
+  253 interface_definition: interface_declaration opt_interface_extends '{' • opt_interface_info '}'
 
     error       shift, and go to state 60
     "abstract"  shift, and go to state 61
     ';'         shift, and go to state 62
 
-    "identifier"  reduce using rule 241 (opt_abstract)
-    "static"      reduce using rule 241 (opt_abstract)
-    PUBLIC        reduce using rule 241 (opt_abstract)
-    PRIVATE       reduce using rule 241 (opt_abstract)
-    PROTECTED     reduce using rule 241 (opt_abstract)
-    '}'           reduce using rule 247 (opt_interface_info)
+    "identifier"  reduce using rule 242 (opt_abstract)
+    "static"      reduce using rule 242 (opt_abstract)
+    PUBLIC        reduce using rule 242 (opt_abstract)
+    PRIVATE       reduce using rule 242 (opt_abstract)
+    PROTECTED     reduce using rule 242 (opt_abstract)
+    '}'           reduce using rule 248 (opt_interface_info)
 
     opt_abstract        go to state 63
     interface_info      go to state 64
@@ -1356,14 +1361,14 @@ State 45
 
 State 46
 
-  223 cls_info: "abstract" • fn_declaration ';' cls_info_opt_more
+  224 cls_info: "abstract" • fn_declaration ';' cls_info_opt_more
 
     "static"   shift, and go to state 47
     PUBLIC     shift, and go to state 48
     PRIVATE    shift, and go to state 49
     PROTECTED  shift, and go to state 50
 
-    $default  reduce using rule 216 (fn_modifier)
+    $default  reduce using rule 217 (fn_modifier)
 
     fn_access_modifier  go to state 52
     fn_static_modifier  go to state 53
@@ -1373,35 +1378,35 @@ State 46
 
 State 47
 
-  209 fn_static_modifier: "static" •
+  210 fn_static_modifier: "static" •
 
-    $default  reduce using rule 209 (fn_static_modifier)
+    $default  reduce using rule 210 (fn_static_modifier)
 
 
 State 48
 
-  207 fn_access_modifier: PUBLIC •
-
-    $default  reduce using rule 207 (fn_access_modifier)
-
-
-State 49
-
-  206 fn_access_modifier: PRIVATE •
-
-    $default  reduce using rule 206 (fn_access_modifier)
-
-
-State 50
-
-  208 fn_access_modifier: PROTECTED •
+  208 fn_access_modifier: PUBLIC •
 
     $default  reduce using rule 208 (fn_access_modifier)
 
 
+State 49
+
+  207 fn_access_modifier: PRIVATE •
+
+    $default  reduce using rule 207 (fn_access_modifier)
+
+
+State 50
+
+  209 fn_access_modifier: PROTECTED •
+
+    $default  reduce using rule 209 (fn_access_modifier)
+
+
 State 51
 
-  226 cls_info: ';' • cls_info_opt_more
+  227 cls_info: ';' • cls_info_opt_more
 
     "abstract"  shift, and go to state 46
     "static"    shift, and go to state 47
@@ -1410,8 +1415,8 @@ State 51
     PROTECTED   shift, and go to state 50
     ';'         shift, and go to state 51
 
-    '}'       reduce using rule 222 (cls_info_opt_more)
-    $default  reduce using rule 216 (fn_modifier)
+    '}'       reduce using rule 223 (cls_info_opt_more)
+    $default  reduce using rule 217 (fn_modifier)
 
     fn_access_modifier  go to state 52
     fn_static_modifier  go to state 53
@@ -1422,11 +1427,11 @@ State 51
 
 State 52
 
-  214 fn_modifier: fn_access_modifier • fn_opt_static_modifier
+  215 fn_modifier: fn_access_modifier • fn_opt_static_modifier
 
     "static"  shift, and go to state 47
 
-    $default  reduce using rule 211 (fn_opt_static_modifier)
+    $default  reduce using rule 212 (fn_opt_static_modifier)
 
     fn_static_modifier      go to state 73
     fn_opt_static_modifier  go to state 74
@@ -1434,13 +1439,13 @@ State 52
 
 State 53
 
-  215 fn_modifier: fn_static_modifier • fn_opt_access_modifier
+  216 fn_modifier: fn_static_modifier • fn_opt_access_modifier
 
     PUBLIC     shift, and go to state 48
     PRIVATE    shift, and go to state 49
     PROTECTED  shift, and go to state 50
 
-    $default  reduce using rule 213 (fn_opt_access_modifier)
+    $default  reduce using rule 214 (fn_opt_access_modifier)
 
     fn_access_modifier      go to state 75
     fn_opt_access_modifier  go to state 76
@@ -1448,7 +1453,7 @@ State 53
 
 State 54
 
-  225 cls_info: fn_modifier • type "identifier" $@26 cls_attr_sign cls_info_opt_more
+  226 cls_info: fn_modifier • type "identifier" $@27 cls_attr_sign cls_info_opt_more
 
     "identifier"  shift, and go to state 5
 
@@ -1458,35 +1463,35 @@ State 54
 
 State 55
 
-  227 opt_cls_info: cls_info •
+  228 opt_cls_info: cls_info •
 
-    $default  reduce using rule 227 (opt_cls_info)
+    $default  reduce using rule 228 (opt_cls_info)
 
 
 State 56
 
-  239 cls_definition: cls_declaration error '{' opt_cls_info • '}'
+  240 cls_definition: cls_declaration error '{' opt_cls_info • '}'
 
     '}'  shift, and go to state 79
 
 
 State 57
 
-  234 opt_implements: "implements" interface_list •
+  235 opt_implements: "implements" interface_list •
 
-    $default  reduce using rule 234 (opt_implements)
+    $default  reduce using rule 235 (opt_implements)
 
 
 State 58
 
-  236 opening_bracket: '{' •
+  237 opening_bracket: '{' •
 
-    $default  reduce using rule 236 (opening_bracket)
+    $default  reduce using rule 237 (opening_bracket)
 
 
 State 59
 
-  238 cls_definition: cls_declaration opt_extends opt_implements opening_bracket • opt_cls_info closing_bracket
+  239 cls_definition: cls_declaration opt_extends opt_implements opening_bracket • opt_cls_info closing_bracket
 
     "abstract"  shift, and go to state 46
     "static"    shift, and go to state 47
@@ -1495,8 +1500,8 @@ State 59
     PROTECTED   shift, and go to state 50
     ';'         shift, and go to state 51
 
-    '}'       reduce using rule 228 (opt_cls_info)
-    $default  reduce using rule 216 (fn_modifier)
+    '}'       reduce using rule 229 (opt_cls_info)
+    $default  reduce using rule 217 (fn_modifier)
 
     fn_access_modifier  go to state 52
     fn_static_modifier  go to state 53
@@ -1507,8 +1512,8 @@ State 59
 
 State 60
 
-  244 interface_info: error • ';'
-  245               | error • block
+  245 interface_info: error • ';'
+  246               | error • block
 
     '{'  shift, and go to state 58
     ';'  shift, and go to state 81
@@ -1519,28 +1524,28 @@ State 60
 
 State 61
 
-  240 opt_abstract: "abstract" •
+  241 opt_abstract: "abstract" •
 
-    $default  reduce using rule 240 (opt_abstract)
+    $default  reduce using rule 241 (opt_abstract)
 
 
 State 62
 
-  243 interface_info: ';' •
+  244 interface_info: ';' •
 
-    $default  reduce using rule 243 (interface_info)
+    $default  reduce using rule 244 (interface_info)
 
 
 State 63
 
-  242 interface_info: opt_abstract • fn_declaration ';' interface_info
+  243 interface_info: opt_abstract • fn_declaration ';' interface_info
 
     "static"   shift, and go to state 47
     PUBLIC     shift, and go to state 48
     PRIVATE    shift, and go to state 49
     PROTECTED  shift, and go to state 50
 
-    $default  reduce using rule 216 (fn_modifier)
+    $default  reduce using rule 217 (fn_modifier)
 
     fn_access_modifier  go to state 52
     fn_static_modifier  go to state 53
@@ -1550,21 +1555,21 @@ State 63
 
 State 64
 
-  246 opt_interface_info: interface_info •
+  247 opt_interface_info: interface_info •
 
-    $default  reduce using rule 246 (opt_interface_info)
+    $default  reduce using rule 247 (opt_interface_info)
 
 
 State 65
 
-  253 interface_definition: interface_declaration error '{' opt_interface_info • '}'
+  254 interface_definition: interface_declaration error '{' opt_interface_info • '}'
 
     '}'  shift, and go to state 85
 
 
 State 66
 
-  231 more_interface_list: ',' • interface_list
+  232 more_interface_list: ',' • interface_list
 
     "identifier"  shift, and go to state 5
 
@@ -1574,22 +1579,22 @@ State 66
 
 State 67
 
-  233 interface_list: nested_id more_interface_list •
+  234 interface_list: nested_id more_interface_list •
 
-    $default  reduce using rule 233 (interface_list)
+    $default  reduce using rule 234 (interface_list)
 
 
 State 68
 
-  252 interface_definition: interface_declaration opt_interface_extends '{' opt_interface_info • '}'
+  253 interface_definition: interface_declaration opt_interface_extends '{' opt_interface_info • '}'
 
     '}'  shift, and go to state 87
 
 
 State 69
 
-  217 fn_declaration: fn_modifier • type "identifier" '(' formal_args ')'
-  218               | fn_modifier • type "identifier" '(' error ')'
+  218 fn_declaration: fn_modifier • type "identifier" '(' formal_args ')'
+  219               | fn_modifier • type "identifier" '(' error ')'
 
     "identifier"  shift, and go to state 5
 
@@ -1599,51 +1604,51 @@ State 69
 
 State 70
 
-  223 cls_info: "abstract" fn_declaration • ';' cls_info_opt_more
+  224 cls_info: "abstract" fn_declaration • ';' cls_info_opt_more
 
     ';'  shift, and go to state 89
 
 
 State 71
 
-  226 cls_info: ';' cls_info_opt_more •
+  227 cls_info: ';' cls_info_opt_more •
 
-    $default  reduce using rule 226 (cls_info)
+    $default  reduce using rule 227 (cls_info)
 
 
 State 72
 
-  221 cls_info_opt_more: cls_info •
+  222 cls_info_opt_more: cls_info •
 
-    $default  reduce using rule 221 (cls_info_opt_more)
+    $default  reduce using rule 222 (cls_info_opt_more)
 
 
 State 73
 
-  210 fn_opt_static_modifier: fn_static_modifier •
+  211 fn_opt_static_modifier: fn_static_modifier •
 
-    $default  reduce using rule 210 (fn_opt_static_modifier)
+    $default  reduce using rule 211 (fn_opt_static_modifier)
 
 
 State 74
 
-  214 fn_modifier: fn_access_modifier fn_opt_static_modifier •
+  215 fn_modifier: fn_access_modifier fn_opt_static_modifier •
 
-    $default  reduce using rule 214 (fn_modifier)
+    $default  reduce using rule 215 (fn_modifier)
 
 
 State 75
 
-  212 fn_opt_access_modifier: fn_access_modifier •
+  213 fn_opt_access_modifier: fn_access_modifier •
 
-    $default  reduce using rule 212 (fn_opt_access_modifier)
+    $default  reduce using rule 213 (fn_opt_access_modifier)
 
 
 State 76
 
-  215 fn_modifier: fn_static_modifier fn_opt_access_modifier •
+  216 fn_modifier: fn_static_modifier fn_opt_access_modifier •
 
-    $default  reduce using rule 215 (fn_modifier)
+    $default  reduce using rule 216 (fn_modifier)
 
 
 State 77
@@ -1659,21 +1664,21 @@ State 77
 
 State 78
 
-  225 cls_info: fn_modifier type • "identifier" $@26 cls_attr_sign cls_info_opt_more
+  226 cls_info: fn_modifier type • "identifier" $@27 cls_attr_sign cls_info_opt_more
 
     "identifier"  shift, and go to state 92
 
 
 State 79
 
-  239 cls_definition: cls_declaration error '{' opt_cls_info '}' •
+  240 cls_definition: cls_declaration error '{' opt_cls_info '}' •
 
-    $default  reduce using rule 239 (cls_definition)
+    $default  reduce using rule 240 (cls_definition)
 
 
 State 80
 
-  238 cls_definition: cls_declaration opt_extends opt_implements opening_bracket opt_cls_info • closing_bracket
+  239 cls_definition: cls_declaration opt_extends opt_implements opening_bracket opt_cls_info • closing_bracket
 
     '}'  shift, and go to state 93
 
@@ -1682,16 +1687,16 @@ State 80
 
 State 81
 
-  244 interface_info: error ';' •
+  245 interface_info: error ';' •
 
-    $default  reduce using rule 244 (interface_info)
+    $default  reduce using rule 245 (interface_info)
 
 
 State 82
 
-  245 interface_info: error block •
+  246 interface_info: error block •
 
-    $default  reduce using rule 245 (interface_info)
+    $default  reduce using rule 246 (interface_info)
 
 
 State 83
@@ -1733,43 +1738,43 @@ State 83
 
 State 84
 
-  242 interface_info: opt_abstract fn_declaration • ';' interface_info
+  243 interface_info: opt_abstract fn_declaration • ';' interface_info
 
     ';'  shift, and go to state 121
 
 
 State 85
 
-  253 interface_definition: interface_declaration error '{' opt_interface_info '}' •
+  254 interface_definition: interface_declaration error '{' opt_interface_info '}' •
 
-    $default  reduce using rule 253 (interface_definition)
+    $default  reduce using rule 254 (interface_definition)
 
 
 State 86
 
-  231 more_interface_list: ',' interface_list •
+  232 more_interface_list: ',' interface_list •
 
-    $default  reduce using rule 231 (more_interface_list)
+    $default  reduce using rule 232 (more_interface_list)
 
 
 State 87
 
-  252 interface_definition: interface_declaration opt_interface_extends '{' opt_interface_info '}' •
+  253 interface_definition: interface_declaration opt_interface_extends '{' opt_interface_info '}' •
 
-    $default  reduce using rule 252 (interface_definition)
+    $default  reduce using rule 253 (interface_definition)
 
 
 State 88
 
-  217 fn_declaration: fn_modifier type • "identifier" '(' formal_args ')'
-  218               | fn_modifier type • "identifier" '(' error ')'
+  218 fn_declaration: fn_modifier type • "identifier" '(' formal_args ')'
+  219               | fn_modifier type • "identifier" '(' error ')'
 
     "identifier"  shift, and go to state 122
 
 
 State 89
 
-  223 cls_info: "abstract" fn_declaration ';' • cls_info_opt_more
+  224 cls_info: "abstract" fn_declaration ';' • cls_info_opt_more
 
     "abstract"  shift, and go to state 46
     "static"    shift, and go to state 47
@@ -1778,8 +1783,8 @@ State 89
     PROTECTED   shift, and go to state 50
     ';'         shift, and go to state 51
 
-    '}'       reduce using rule 222 (cls_info_opt_more)
-    $default  reduce using rule 216 (fn_modifier)
+    '}'       reduce using rule 223 (cls_info_opt_more)
+    $default  reduce using rule 217 (fn_modifier)
 
     fn_access_modifier  go to state 52
     fn_static_modifier  go to state 53
@@ -1808,25 +1813,25 @@ State 91
 
 State 92
 
-  225 cls_info: fn_modifier type "identifier" • $@26 cls_attr_sign cls_info_opt_more
+  226 cls_info: fn_modifier type "identifier" • $@27 cls_attr_sign cls_info_opt_more
 
-    $default  reduce using rule 224 ($@26)
+    $default  reduce using rule 225 ($@27)
 
-    $@26  go to state 125
+    $@27  go to state 125
 
 
 State 93
 
-  237 closing_bracket: '}' •
+  238 closing_bracket: '}' •
 
-    $default  reduce using rule 237 (closing_bracket)
+    $default  reduce using rule 238 (closing_bracket)
 
 
 State 94
 
-  238 cls_definition: cls_declaration opt_extends opt_implements opening_bracket opt_cls_info closing_bracket •
+  239 cls_definition: cls_declaration opt_extends opt_implements opening_bracket opt_cls_info closing_bracket •
 
-    $default  reduce using rule 238 (cls_definition)
+    $default  reduce using rule 239 (cls_definition)
 
 
 State 95
@@ -1861,7 +1866,7 @@ State 98
 
 State 99
 
-  193 return_statement: "return" • opt_return_expression
+  194 return_statement: "return" • opt_return_expression
 
     "new"  shift, and go to state 105
     '-'    shift, and go to state 128
@@ -1869,7 +1874,7 @@ State 99
     '!'    shift, and go to state 130
     '~'    shift, and go to state 131
 
-    ';'       reduce using rule 192 (opt_return_expression)
+    ';'       reduce using rule 193 (opt_return_expression)
     $default  reduce using rule 45 (opt_unary_operator)
 
     unary_operator             go to state 132
@@ -1896,32 +1901,34 @@ State 100
 
 State 101
 
-  174 for_statement: "for" • '(' statement_declarative ';' $@16 condition ';' $@17 for_updating_statement ')' $@18 conditional_body
+  175 for_statement: "for" • $@16 '(' statement_declarative ';' $@17 condition ';' $@18 for_updating_statement ')' $@19 conditional_body
 
-    '('  shift, and go to state 145
+    $default  reduce using rule 171 ($@16)
+
+    $@16  go to state 145
 
 
 State 102
 
-  177 while_statement: "while" • $@19 '(' condition ')' $@20 conditional_body
+  178 while_statement: "while" • $@20 '(' condition ')' $@21 conditional_body
 
-    $default  reduce using rule 175 ($@19)
+    $default  reduce using rule 176 ($@20)
 
-    $@19  go to state 146
+    $@20  go to state 146
 
 
 State 103
 
-  179 do_while_statement: "do" • $@21 block "while" '(' condition ')' ';'
+  180 do_while_statement: "do" • $@22 block "while" '(' condition ')' ';'
 
-    $default  reduce using rule 178 ($@21)
+    $default  reduce using rule 179 ($@22)
 
-    $@21  go to state 147
+    $@22  go to state 147
 
 
 State 104
 
-  180 switch_statement: "switch" • '(' condition ')' '{' switch_body '}'
+  181 switch_statement: "switch" • '(' condition ')' '{' switch_body '}'
 
     '('  shift, and go to state 148
 
@@ -2126,17 +2133,17 @@ State 120
 
 State 121
 
-  242 interface_info: opt_abstract fn_declaration ';' • interface_info
+  243 interface_info: opt_abstract fn_declaration ';' • interface_info
 
     error       shift, and go to state 60
     "abstract"  shift, and go to state 61
     ';'         shift, and go to state 62
 
-    "identifier"  reduce using rule 241 (opt_abstract)
-    "static"      reduce using rule 241 (opt_abstract)
-    PUBLIC        reduce using rule 241 (opt_abstract)
-    PRIVATE       reduce using rule 241 (opt_abstract)
-    PROTECTED     reduce using rule 241 (opt_abstract)
+    "identifier"  reduce using rule 242 (opt_abstract)
+    "static"      reduce using rule 242 (opt_abstract)
+    PUBLIC        reduce using rule 242 (opt_abstract)
+    PRIVATE       reduce using rule 242 (opt_abstract)
+    PROTECTED     reduce using rule 242 (opt_abstract)
 
     opt_abstract    go to state 63
     interface_info  go to state 158
@@ -2144,17 +2151,17 @@ State 121
 
 State 122
 
-  217 fn_declaration: fn_modifier type "identifier" • '(' formal_args ')'
-  218               | fn_modifier type "identifier" • '(' error ')'
+  218 fn_declaration: fn_modifier type "identifier" • '(' formal_args ')'
+  219               | fn_modifier type "identifier" • '(' error ')'
 
     '('  shift, and go to state 159
 
 
 State 123
 
-  223 cls_info: "abstract" fn_declaration ';' cls_info_opt_more •
+  224 cls_info: "abstract" fn_declaration ';' cls_info_opt_more •
 
-    $default  reduce using rule 223 (cls_info)
+    $default  reduce using rule 224 (cls_info)
 
 
 State 124
@@ -2166,7 +2173,7 @@ State 124
 
 State 125
 
-  225 cls_info: fn_modifier type "identifier" $@26 • cls_attr_sign cls_info_opt_more
+  226 cls_info: fn_modifier type "identifier" $@27 • cls_attr_sign cls_info_opt_more
 
     '='  shift, and go to state 160
     '('  shift, and go to state 161
@@ -2303,9 +2310,9 @@ State 133
 
 State 134
 
-  191 opt_return_expression: expression •
+  192 opt_return_expression: expression •
 
-    $default  reduce using rule 191 (opt_return_expression)
+    $default  reduce using rule 192 (opt_return_expression)
 
 
 State 135
@@ -2392,16 +2399,16 @@ State 141
 
 State 142
 
-  190 opt_return_expression: new_expression •
+  191 opt_return_expression: new_expression •
 
-    $default  reduce using rule 190 (opt_return_expression)
+    $default  reduce using rule 191 (opt_return_expression)
 
 
 State 143
 
-  193 return_statement: "return" opt_return_expression •
+  194 return_statement: "return" opt_return_expression •
 
-    $default  reduce using rule 193 (return_statement)
+    $default  reduce using rule 194 (return_statement)
 
 
 State 144
@@ -2439,35 +2446,31 @@ State 144
 
 State 145
 
-  174 for_statement: "for" '(' • statement_declarative ';' $@16 condition ';' $@17 for_updating_statement ')' $@18 conditional_body
+  175 for_statement: "for" $@16 • '(' statement_declarative ';' $@17 condition ';' $@18 for_updating_statement ')' $@19 conditional_body
 
-    "identifier"  shift, and go to state 5
-
-    nested_id              go to state 77
-    type                   go to state 235
-    statement_declarative  go to state 236
+    '('  shift, and go to state 235
 
 
 State 146
 
-  177 while_statement: "while" $@19 • '(' condition ')' $@20 conditional_body
+  178 while_statement: "while" $@20 • '(' condition ')' $@21 conditional_body
 
-    '('  shift, and go to state 237
+    '('  shift, and go to state 236
 
 
 State 147
 
-  179 do_while_statement: "do" $@21 • block "while" '(' condition ')' ';'
+  180 do_while_statement: "do" $@22 • block "while" '(' condition ')' ';'
 
     '{'  shift, and go to state 58
 
-    block            go to state 238
+    block            go to state 237
     opening_bracket  go to state 83
 
 
 State 148
 
-  180 switch_statement: "switch" '(' • condition ')' '{' switch_body '}'
+  181 switch_statement: "switch" '(' • condition ')' '{' switch_body '}'
 
     '-'  shift, and go to state 128
     '+'  shift, and go to state 129
@@ -2486,25 +2489,25 @@ State 148
     equality_expression        go to state 139
     conjunctive_expression     go to state 140
     disjunctive_expression     go to state 141
-    condition                  go to state 239
+    condition                  go to state 238
 
 
 State 149
 
   113 new_expression: "new" nested_id • new_initialisation
 
-    "[]"  shift, and go to state 240
-    '['   shift, and go to state 241
-    '('   shift, and go to state 242
+    "[]"  shift, and go to state 239
+    '['   shift, and go to state 240
+    '('   shift, and go to state 241
 
-    new_initialisation  go to state 243
+    new_initialisation  go to state 242
 
 
 State 150
 
    93 statement_s0: '(' expression • ')' opt_array
 
-    ')'  shift, and go to state 244
+    ')'  shift, and go to state 243
 
 
 State 151
@@ -2513,7 +2516,7 @@ State 151
 
     $default  reduce using rule 6 ($@1)
 
-    $@1  go to state 245
+    $@1  go to state 244
 
 
 State 152
@@ -2560,25 +2563,25 @@ State 157
 
 State 158
 
-  242 interface_info: opt_abstract fn_declaration ';' interface_info •
+  243 interface_info: opt_abstract fn_declaration ';' interface_info •
 
-    $default  reduce using rule 242 (interface_info)
+    $default  reduce using rule 243 (interface_info)
 
 
 State 159
 
-  217 fn_declaration: fn_modifier type "identifier" '(' • formal_args ')'
-  218               | fn_modifier type "identifier" '(' • error ')'
+  218 fn_declaration: fn_modifier type "identifier" '(' • formal_args ')'
+  219               | fn_modifier type "identifier" '(' • error ')'
 
-    error         shift, and go to state 246
+    error         shift, and go to state 245
     "identifier"  shift, and go to state 5
 
     ')'  reduce using rule 130 (formal_args)
 
     nested_id               go to state 77
-    type                    go to state 247
-    obligatory_formal_args  go to state 248
-    formal_args             go to state 249
+    type                    go to state 246
+    obligatory_formal_args  go to state 247
+    formal_args             go to state 248
 
 
 State 160
@@ -2595,7 +2598,7 @@ State 160
 
     unary_operator             go to state 132
     opt_unary_operator         go to state 133
-    expression                 go to state 250
+    expression                 go to state 249
     unary_expression           go to state 135
     multiplicative_expression  go to state 136
     additive_expression        go to state 137
@@ -2603,35 +2606,35 @@ State 160
     equality_expression        go to state 139
     conjunctive_expression     go to state 140
     disjunctive_expression     go to state 141
-    new_expression             go to state 251
-    assignable_expression      go to state 252
+    new_expression             go to state 250
+    assignable_expression      go to state 251
 
 
 State 161
 
-  204 cls_attr_sign: '(' • $@24 formal_args ')' $@25 block
-  205              | '(' • error ')' block
+  205 cls_attr_sign: '(' • $@25 formal_args ')' $@26 block
+  206              | '(' • error ')' block
 
-    error  shift, and go to state 253
+    error  shift, and go to state 252
 
-    "identifier"  reduce using rule 202 ($@24)
-    ')'           reduce using rule 202 ($@24)
+    "identifier"  reduce using rule 203 ($@25)
+    ')'           reduce using rule 203 ($@25)
 
-    $@24  go to state 254
+    $@25  go to state 253
 
 
 State 162
 
-  201 cls_attr_sign: opt_assignment • $@23 cls_attr_more
+  202 cls_attr_sign: opt_assignment • $@24 cls_attr_more
 
-    $default  reduce using rule 200 ($@23)
+    $default  reduce using rule 201 ($@24)
 
-    $@23  go to state 255
+    $@24  go to state 254
 
 
 State 163
 
-  225 cls_info: fn_modifier type "identifier" $@26 cls_attr_sign • cls_info_opt_more
+  226 cls_info: fn_modifier type "identifier" $@27 cls_attr_sign • cls_info_opt_more
 
     "abstract"  shift, and go to state 46
     "static"    shift, and go to state 47
@@ -2640,13 +2643,13 @@ State 163
     PROTECTED   shift, and go to state 50
     ';'         shift, and go to state 51
 
-    '}'       reduce using rule 222 (cls_info_opt_more)
-    $default  reduce using rule 216 (fn_modifier)
+    '}'       reduce using rule 223 (cls_info_opt_more)
+    $default  reduce using rule 217 (fn_modifier)
 
     fn_access_modifier  go to state 52
     fn_static_modifier  go to state 53
     fn_modifier         go to state 54
-    cls_info_opt_more   go to state 256
+    cls_info_opt_more   go to state 255
     cls_info            go to state 72
 
 
@@ -2656,7 +2659,7 @@ State 164
 
     $default  reduce using rule 133 ($@10)
 
-    $@10  go to state 257
+    $@10  go to state 256
 
 
 State 165
@@ -2666,7 +2669,7 @@ State 165
     "identifier"  shift, and go to state 164
 
     var_declaration_body  go to state 211
-    var_declarations      go to state 258
+    var_declarations      go to state 257
 
 
 State 166
@@ -2888,14 +2891,14 @@ State 196
 
     $default  reduce using rule 64 (assignment_operator)
 
-    new_expression  go to state 259
+    new_expression  go to state 258
 
 
 State 197
 
    98 statement_s1: '.' • "identifier" $@5 statement_s1
 
-    "identifier"  shift, and go to state 260
+    "identifier"  shift, and go to state 259
 
 
 State 198
@@ -2911,7 +2914,7 @@ State 198
 
     unary_operator             go to state 132
     opt_unary_operator         go to state 133
-    expression                 go to state 261
+    expression                 go to state 260
     unary_expression           go to state 135
     multiplicative_expression  go to state 136
     additive_expression        go to state 137
@@ -2927,7 +2930,7 @@ State 199
 
     $default  reduce using rule 101 ($@6)
 
-    $@6  go to state 262
+    $@6  go to state 261
 
 
 State 200
@@ -2992,7 +2995,7 @@ State 207
 
     unary_operator             go to state 132
     opt_unary_operator         go to state 133
-    expression                 go to state 263
+    expression                 go to state 262
     unary_expression           go to state 135
     multiplicative_expression  go to state 136
     additive_expression        go to state 137
@@ -3015,7 +3018,7 @@ State 209
 
     $default  reduce using rule 140 ($@13)
 
-    $@13  go to state 264
+    $@13  go to state 263
 
 
 State 210
@@ -3037,7 +3040,7 @@ State 212
    96 statement_s1: var_declarations •
   136 var_declarations: var_declarations • ',' var_declaration_body
 
-    ','  shift, and go to state 265
+    ','  shift, and go to state 264
 
     $default  reduce using rule 96 (statement_s1)
 
@@ -3060,11 +3063,11 @@ State 215
 
    61 val: "string" • opt_string_access
 
-    '.'  shift, and go to state 266
+    '.'  shift, and go to state 265
 
     $default  reduce using rule 63 (opt_string_access)
 
-    opt_string_access  go to state 267
+    opt_string_access  go to state 266
 
 
 State 216
@@ -3114,7 +3117,7 @@ State 220
     relational_expression      go to state 138
     equality_expression        go to state 139
     conjunctive_expression     go to state 140
-    disjunctive_expression     go to state 268
+    disjunctive_expression     go to state 267
 
 
 State 221
@@ -3125,7 +3128,7 @@ State 221
     '('       reduce using rule 48 ($@2)
     $default  reduce using rule 8 (var_load)
 
-    $@2  go to state 269
+    $@2  go to state 268
 
 
 State 222
@@ -3139,11 +3142,11 @@ State 223
 
    54 var_fn: fn_call • opt_var_fn_access
 
-    '.'  shift, and go to state 270
+    '.'  shift, and go to state 269
 
     $default  reduce using rule 52 (opt_var_fn_access)
 
-    opt_var_fn_access  go to state 271
+    opt_var_fn_access  go to state 270
 
 
 State 224
@@ -3173,7 +3176,7 @@ State 226
 
     unary_operator      go to state 132
     opt_unary_operator  go to state 133
-    unary_expression    go to state 272
+    unary_expression    go to state 271
 
 
 State 227
@@ -3190,7 +3193,7 @@ State 227
     unary_operator             go to state 132
     opt_unary_operator         go to state 133
     unary_expression           go to state 135
-    multiplicative_expression  go to state 273
+    multiplicative_expression  go to state 272
 
 
 State 228
@@ -3208,7 +3211,7 @@ State 228
     opt_unary_operator         go to state 133
     unary_expression           go to state 135
     multiplicative_expression  go to state 136
-    additive_expression        go to state 274
+    additive_expression        go to state 273
 
 
 State 229
@@ -3227,7 +3230,7 @@ State 229
     unary_expression           go to state 135
     multiplicative_expression  go to state 136
     additive_expression        go to state 137
-    relational_expression      go to state 275
+    relational_expression      go to state 274
 
 
 State 230
@@ -3247,7 +3250,7 @@ State 230
     multiplicative_expression  go to state 136
     additive_expression        go to state 137
     relational_expression      go to state 138
-    equality_expression        go to state 276
+    equality_expression        go to state 275
 
 
 State 231
@@ -3268,14 +3271,14 @@ State 231
     additive_expression        go to state 137
     relational_expression      go to state 138
     equality_expression        go to state 139
-    conjunctive_expression     go to state 277
+    conjunctive_expression     go to state 276
 
 
 State 232
 
   168 if_statement: "if" '(' error • ')' conditional_body opt_else_statement
 
-    ')'  shift, and go to state 278
+    ')'  shift, and go to state 277
 
 
 State 233
@@ -3289,28 +3292,23 @@ State 234
 
   167 if_statement: "if" '(' condition • ')' $@14 conditional_body $@15 opt_else_statement
 
-    ')'  shift, and go to state 279
+    ')'  shift, and go to state 278
 
 
 State 235
 
-  139 statement_declarative: type • $@12 var_declarations
+  175 for_statement: "for" $@16 '(' • statement_declarative ';' $@17 condition ';' $@18 for_updating_statement ')' $@19 conditional_body
 
-    $default  reduce using rule 138 ($@12)
+    "identifier"  shift, and go to state 5
 
-    $@12  go to state 280
+    nested_id              go to state 77
+    type                   go to state 279
+    statement_declarative  go to state 280
 
 
 State 236
 
-  174 for_statement: "for" '(' statement_declarative • ';' $@16 condition ';' $@17 for_updating_statement ')' $@18 conditional_body
-
-    ';'  shift, and go to state 281
-
-
-State 237
-
-  177 while_statement: "while" $@19 '(' • condition ')' $@20 conditional_body
+  178 while_statement: "while" $@20 '(' • condition ')' $@21 conditional_body
 
     '-'  shift, and go to state 128
     '+'  shift, and go to state 129
@@ -3329,24 +3327,24 @@ State 237
     equality_expression        go to state 139
     conjunctive_expression     go to state 140
     disjunctive_expression     go to state 141
-    condition                  go to state 282
+    condition                  go to state 281
+
+
+State 237
+
+  180 do_while_statement: "do" $@22 block • "while" '(' condition ')' ';'
+
+    "while"  shift, and go to state 282
 
 
 State 238
 
-  179 do_while_statement: "do" $@21 block • "while" '(' condition ')' ';'
+  181 switch_statement: "switch" '(' condition • ')' '{' switch_body '}'
 
-    "while"  shift, and go to state 283
+    ')'  shift, and go to state 283
 
 
 State 239
-
-  180 switch_statement: "switch" '(' condition • ')' '{' switch_body '}'
-
-    ')'  shift, and go to state 284
-
-
-State 240
 
   116 new_initialisation: "[]" • opt_array_type '{' args '}'
 
@@ -3354,10 +3352,10 @@ State 240
 
     $default  reduce using rule 11 (opt_array_type)
 
-    opt_array_type  go to state 285
+    opt_array_type  go to state 284
 
 
-State 241
+State 240
 
   115 new_initialisation: '[' • expression ']' opt_array opt_array_type
 
@@ -3370,7 +3368,7 @@ State 241
 
     unary_operator             go to state 132
     opt_unary_operator         go to state 133
-    expression                 go to state 286
+    expression                 go to state 285
     unary_expression           go to state 135
     multiplicative_expression  go to state 136
     additive_expression        go to state 137
@@ -3380,7 +3378,7 @@ State 241
     disjunctive_expression     go to state 141
 
 
-State 242
+State 241
 
   114 new_initialisation: '(' • args ')'
 
@@ -3395,7 +3393,7 @@ State 242
 
     unary_operator             go to state 132
     opt_unary_operator         go to state 133
-    expression                 go to state 250
+    expression                 go to state 249
     unary_expression           go to state 135
     multiplicative_expression  go to state 136
     additive_expression        go to state 137
@@ -3403,24 +3401,35 @@ State 242
     equality_expression        go to state 139
     conjunctive_expression     go to state 140
     disjunctive_expression     go to state 141
-    new_expression             go to state 251
-    assignable_expression      go to state 287
-    obligatory_args            go to state 288
-    args                       go to state 289
+    new_expression             go to state 250
+    assignable_expression      go to state 286
+    obligatory_args            go to state 287
+    args                       go to state 288
 
 
-State 243
+State 242
 
   113 new_expression: "new" nested_id new_initialisation •
 
     $default  reduce using rule 113 (new_expression)
 
 
-State 244
+State 243
 
    93 statement_s0: '(' expression ')' • opt_array
 
-    '['  shift, and go to state 290
+    '['  shift, and go to state 289
+
+    $default  reduce using rule 13 (opt_array)
+
+    opt_array  go to state 290
+
+
+State 244
+
+    7 var: "identifier" $@1 • opt_array opt_var_access
+
+    '['  shift, and go to state 289
 
     $default  reduce using rule 13 (opt_array)
 
@@ -3429,105 +3438,94 @@ State 244
 
 State 245
 
-    7 var: "identifier" $@1 • opt_array opt_var_access
+  219 fn_declaration: fn_modifier type "identifier" '(' error • ')'
 
-    '['  shift, and go to state 290
-
-    $default  reduce using rule 13 (opt_array)
-
-    opt_array  go to state 292
+    ')'  shift, and go to state 292
 
 
 State 246
 
-  218 fn_declaration: fn_modifier type "identifier" '(' error • ')'
-
-    ')'  shift, and go to state 293
-
-
-State 247
-
   127 obligatory_formal_args: type • "identifier" opt_array_type $@9 ',' obligatory_formal_args
   128                       | type • "identifier" opt_array_type opt_variadic
 
-    "identifier"  shift, and go to state 294
+    "identifier"  shift, and go to state 293
 
 
-State 248
+State 247
 
   129 formal_args: obligatory_formal_args •
 
     $default  reduce using rule 129 (formal_args)
 
 
+State 248
+
+  218 fn_declaration: fn_modifier type "identifier" '(' formal_args • ')'
+
+    ')'  shift, and go to state 294
+
+
 State 249
-
-  217 fn_declaration: fn_modifier type "identifier" '(' formal_args • ')'
-
-    ')'  shift, and go to state 295
-
-
-State 250
 
   118 assignable_expression: expression •
 
     $default  reduce using rule 118 (assignable_expression)
 
 
-State 251
+State 250
 
   117 assignable_expression: new_expression •
 
     $default  reduce using rule 117 (assignable_expression)
 
 
-State 252
+State 251
 
   131 opt_assignment: '=' assignable_expression •
 
     $default  reduce using rule 131 (opt_assignment)
 
 
+State 252
+
+  206 cls_attr_sign: '(' error • ')' block
+
+    ')'  shift, and go to state 295
+
+
 State 253
 
-  205 cls_attr_sign: '(' error • ')' block
-
-    ')'  shift, and go to state 296
-
-
-State 254
-
-  204 cls_attr_sign: '(' $@24 • formal_args ')' $@25 block
+  205 cls_attr_sign: '(' $@25 • formal_args ')' $@26 block
 
     "identifier"  shift, and go to state 5
 
     $default  reduce using rule 130 (formal_args)
 
     nested_id               go to state 77
-    type                    go to state 247
-    obligatory_formal_args  go to state 248
-    formal_args             go to state 297
+    type                    go to state 246
+    obligatory_formal_args  go to state 247
+    formal_args             go to state 296
+
+
+State 254
+
+  202 cls_attr_sign: opt_assignment $@24 • cls_attr_more
+
+    error  shift, and go to state 297
+    ','    shift, and go to state 298
+    ';'    shift, and go to state 299
+
+    cls_attr_more  go to state 300
 
 
 State 255
 
-  201 cls_attr_sign: opt_assignment $@23 • cls_attr_more
+  226 cls_info: fn_modifier type "identifier" $@27 cls_attr_sign cls_info_opt_more •
 
-    error  shift, and go to state 298
-    ','    shift, and go to state 299
-    ';'    shift, and go to state 300
-
-    cls_attr_more  go to state 301
+    $default  reduce using rule 226 (cls_info)
 
 
 State 256
-
-  225 cls_info: fn_modifier type "identifier" $@26 cls_attr_sign cls_info_opt_more •
-
-    $default  reduce using rule 225 (cls_info)
-
-
-State 257
 
   135 var_declaration_body: "identifier" $@10 • opt_array_type $@11 opt_assignment
 
@@ -3535,43 +3533,43 @@ State 257
 
     $default  reduce using rule 11 (opt_array_type)
 
-    opt_array_type  go to state 302
+    opt_array_type  go to state 301
 
 
-State 258
+State 257
 
   100 statement_s1: "[]" var_declarations •
   136 var_declarations: var_declarations • ',' var_declaration_body
 
-    ','  shift, and go to state 265
+    ','  shift, and go to state 264
 
     $default  reduce using rule 100 (statement_s1)
 
 
-State 259
+State 258
 
   142 assignment: '=' new_expression •
 
     $default  reduce using rule 142 (assignment)
 
 
-State 260
+State 259
 
    98 statement_s1: '.' "identifier" • $@5 statement_s1
 
     $default  reduce using rule 97 ($@5)
 
-    $@5  go to state 303
+    $@5  go to state 302
 
 
-State 261
+State 260
 
    99 statement_s1: '[' expression • ']' opt_array statement_s2
 
-    ']'  shift, and go to state 304
+    ']'  shift, and go to state 303
 
 
-State 262
+State 261
 
   103 statement_s1: '(' $@6 • args $@7 ')' opt_array statement_s2
 
@@ -3586,7 +3584,7 @@ State 262
 
     unary_operator             go to state 132
     opt_unary_operator         go to state 133
-    expression                 go to state 250
+    expression                 go to state 249
     unary_expression           go to state 135
     multiplicative_expression  go to state 136
     additive_expression        go to state 137
@@ -3594,20 +3592,20 @@ State 262
     equality_expression        go to state 139
     conjunctive_expression     go to state 140
     disjunctive_expression     go to state 141
-    new_expression             go to state 251
-    assignable_expression      go to state 287
-    obligatory_args            go to state 288
-    args                       go to state 305
+    new_expression             go to state 250
+    assignable_expression      go to state 286
+    obligatory_args            go to state 287
+    args                       go to state 304
 
 
-State 263
+State 262
 
   105 statement_s1: binary_operator expression •
 
     $default  reduce using rule 105 (statement_s1)
 
 
-State 264
+State 263
 
   141 assignment: assignment_operator $@13 • expression
 
@@ -3620,7 +3618,7 @@ State 264
 
     unary_operator             go to state 132
     opt_unary_operator         go to state 133
-    expression                 go to state 306
+    expression                 go to state 305
     unary_expression           go to state 135
     multiplicative_expression  go to state 136
     additive_expression        go to state 137
@@ -3630,16 +3628,16 @@ State 264
     disjunctive_expression     go to state 141
 
 
-State 265
+State 264
 
   136 var_declarations: var_declarations ',' • var_declaration_body
 
     "identifier"  shift, and go to state 164
 
-    var_declaration_body  go to state 307
+    var_declaration_body  go to state 306
 
 
-State 266
+State 265
 
    62 opt_string_access: '.' • var_fn
 
@@ -3648,33 +3646,33 @@ State 266
     var       go to state 221
     var_load  go to state 222
     fn_call   go to state 223
-    var_fn    go to state 308
+    var_fn    go to state 307
 
 
-State 267
+State 266
 
    61 val: "string" opt_string_access •
 
     $default  reduce using rule 61 (val)
 
 
-State 268
+State 267
 
    78 unary_expression: opt_unary_operator '(' disjunctive_expression • ')' opt_array
    89 disjunctive_expression: disjunctive_expression • "||" conjunctive_expression
 
     "||"  shift, and go to state 231
-    ')'   shift, and go to state 309
+    ')'   shift, and go to state 308
 
 
-State 269
+State 268
 
    50 fn_call: var $@2 • '(' args ')' $@3 opt_array
 
-    '('  shift, and go to state 310
+    '('  shift, and go to state 309
 
 
-State 270
+State 269
 
    51 opt_var_fn_access: '.' • var_fn
 
@@ -3683,24 +3681,24 @@ State 270
     var       go to state 221
     var_load  go to state 222
     fn_call   go to state 223
-    var_fn    go to state 311
+    var_fn    go to state 310
 
 
-State 271
+State 270
 
    54 var_fn: fn_call opt_var_fn_access •
 
     $default  reduce using rule 54 (var_fn)
 
 
-State 272
+State 271
 
    79 multiplicative_expression: multiplicative_expression multiplicative_operator unary_expression •
 
     $default  reduce using rule 79 (multiplicative_expression)
 
 
-State 273
+State 272
 
    79 multiplicative_expression: multiplicative_expression • multiplicative_operator unary_expression
    81 additive_expression: additive_expression additive_operator multiplicative_expression •
@@ -3714,7 +3712,7 @@ State 273
     multiplicative_operator  go to state 226
 
 
-State 274
+State 273
 
    81 additive_expression: additive_expression • additive_operator multiplicative_expression
    83 relational_expression: relational_expression order_operator additive_expression •
@@ -3727,7 +3725,7 @@ State 274
     additive_operator  go to state 227
 
 
-State 275
+State 274
 
    83 relational_expression: relational_expression • order_operator additive_expression
    85 equality_expression: equality_expression equality_operator relational_expression •
@@ -3742,7 +3740,7 @@ State 275
     order_operator  go to state 228
 
 
-State 276
+State 275
 
    85 equality_expression: equality_expression • equality_operator relational_expression
    87 conjunctive_expression: conjunctive_expression "&&" equality_expression •
@@ -3755,7 +3753,7 @@ State 276
     equality_operator  go to state 229
 
 
-State 277
+State 276
 
    87 conjunctive_expression: conjunctive_expression • "&&" equality_expression
    89 disjunctive_expression: disjunctive_expression "||" conjunctive_expression •
@@ -3765,7 +3763,7 @@ State 277
     $default  reduce using rule 89 (disjunctive_expression)
 
 
-State 278
+State 277
 
   168 if_statement: "if" '(' error ')' • conditional_body opt_else_statement
 
@@ -3787,9 +3785,9 @@ State 278
     unary_special_operator  go to state 108
     statement_s0            go to state 109
     new_expression          go to state 110
-    statement               go to state 312
-    block                   go to state 313
-    conditional_body        go to state 314
+    statement               go to state 311
+    block                   go to state 312
+    conditional_body        go to state 313
     if_statement            go to state 115
     for_statement           go to state 116
     while_statement         go to state 117
@@ -3799,70 +3797,67 @@ State 278
     opening_bracket         go to state 83
 
 
-State 279
+State 278
 
   167 if_statement: "if" '(' condition ')' • $@14 conditional_body $@15 opt_else_statement
 
     $default  reduce using rule 165 ($@14)
 
-    $@14  go to state 315
+    $@14  go to state 314
+
+
+State 279
+
+  139 statement_declarative: type • $@12 var_declarations
+
+    $default  reduce using rule 138 ($@12)
+
+    $@12  go to state 315
 
 
 State 280
 
-  139 statement_declarative: type $@12 • var_declarations
+  175 for_statement: "for" $@16 '(' statement_declarative • ';' $@17 condition ';' $@18 for_updating_statement ')' $@19 conditional_body
 
-    "identifier"  shift, and go to state 164
-
-    var_declaration_body  go to state 211
-    var_declarations      go to state 316
+    ';'  shift, and go to state 316
 
 
 State 281
 
-  174 for_statement: "for" '(' statement_declarative ';' • $@16 condition ';' $@17 for_updating_statement ')' $@18 conditional_body
+  178 while_statement: "while" $@20 '(' condition • ')' $@21 conditional_body
 
-    $default  reduce using rule 171 ($@16)
-
-    $@16  go to state 317
+    ')'  shift, and go to state 317
 
 
 State 282
 
-  177 while_statement: "while" $@19 '(' condition • ')' $@20 conditional_body
+  180 do_while_statement: "do" $@22 block "while" • '(' condition ')' ';'
 
-    ')'  shift, and go to state 318
+    '('  shift, and go to state 318
 
 
 State 283
 
-  179 do_while_statement: "do" $@21 block "while" • '(' condition ')' ';'
+  181 switch_statement: "switch" '(' condition ')' • '{' switch_body '}'
 
-    '('  shift, and go to state 319
+    '{'  shift, and go to state 319
 
 
 State 284
 
-  180 switch_statement: "switch" '(' condition ')' • '{' switch_body '}'
+  116 new_initialisation: "[]" opt_array_type • '{' args '}'
 
     '{'  shift, and go to state 320
 
 
 State 285
 
-  116 new_initialisation: "[]" opt_array_type • '{' args '}'
+  115 new_initialisation: '[' expression • ']' opt_array opt_array_type
 
-    '{'  shift, and go to state 321
+    ']'  shift, and go to state 321
 
 
 State 286
-
-  115 new_initialisation: '[' expression • ']' opt_array opt_array_type
-
-    ']'  shift, and go to state 322
-
-
-State 287
 
   119 obligatory_args: assignable_expression •
   121                | assignable_expression • $@8 ',' obligatory_args
@@ -3870,24 +3865,24 @@ State 287
     ','       reduce using rule 120 ($@8)
     $default  reduce using rule 119 (obligatory_args)
 
-    $@8  go to state 323
+    $@8  go to state 322
 
 
-State 288
+State 287
 
   122 args: obligatory_args •
 
     $default  reduce using rule 122 (args)
 
 
-State 289
+State 288
 
   114 new_initialisation: '(' args • ')'
 
-    ')'  shift, and go to state 324
+    ')'  shift, and go to state 323
 
 
-State 290
+State 289
 
    12 opt_array: '[' • expression ']' opt_array
 
@@ -3900,7 +3895,7 @@ State 290
 
     unary_operator             go to state 132
     opt_unary_operator         go to state 133
-    expression                 go to state 325
+    expression                 go to state 324
     unary_expression           go to state 135
     multiplicative_expression  go to state 136
     additive_expression        go to state 137
@@ -3910,32 +3905,32 @@ State 290
     disjunctive_expression     go to state 141
 
 
-State 291
+State 290
 
    93 statement_s0: '(' expression ')' opt_array •
 
     $default  reduce using rule 93 (statement_s0)
 
 
-State 292
+State 291
 
     7 var: "identifier" $@1 opt_array • opt_var_access
 
-    '.'  shift, and go to state 326
+    '.'  shift, and go to state 325
 
     $default  reduce using rule 5 (opt_var_access)
 
-    opt_var_access  go to state 327
+    opt_var_access  go to state 326
+
+
+State 292
+
+  219 fn_declaration: fn_modifier type "identifier" '(' error ')' •
+
+    $default  reduce using rule 219 (fn_declaration)
 
 
 State 293
-
-  218 fn_declaration: fn_modifier type "identifier" '(' error ')' •
-
-    $default  reduce using rule 218 (fn_declaration)
-
-
-State 294
 
   127 obligatory_formal_args: type "identifier" • opt_array_type $@9 ',' obligatory_formal_args
   128                       | type "identifier" • opt_array_type opt_variadic
@@ -3944,71 +3939,71 @@ State 294
 
     $default  reduce using rule 11 (opt_array_type)
 
-    opt_array_type  go to state 328
+    opt_array_type  go to state 327
+
+
+State 294
+
+  218 fn_declaration: fn_modifier type "identifier" '(' formal_args ')' •
+
+    $default  reduce using rule 218 (fn_declaration)
 
 
 State 295
 
-  217 fn_declaration: fn_modifier type "identifier" '(' formal_args ')' •
+  206 cls_attr_sign: '(' error ')' • block
 
-    $default  reduce using rule 217 (fn_declaration)
+    '{'  shift, and go to state 58
+
+    block            go to state 328
+    opening_bracket  go to state 83
 
 
 State 296
 
-  205 cls_attr_sign: '(' error ')' • block
+  205 cls_attr_sign: '(' $@25 formal_args • ')' $@26 block
 
-    '{'  shift, and go to state 58
-
-    block            go to state 329
-    opening_bracket  go to state 83
+    ')'  shift, and go to state 329
 
 
 State 297
 
-  204 cls_attr_sign: '(' $@24 formal_args • ')' $@25 block
+  200 cls_attr_more: error • ';'
 
-    ')'  shift, and go to state 330
+    ';'  shift, and go to state 330
 
 
 State 298
 
-  199 cls_attr_more: error • ';'
+  198 cls_attr_more: ',' • "identifier" $@23 opt_assignment cls_attr_more
 
-    ';'  shift, and go to state 331
+    "identifier"  shift, and go to state 331
 
 
 State 299
 
-  197 cls_attr_more: ',' • "identifier" $@22 opt_assignment cls_attr_more
+  199 cls_attr_more: ';' •
 
-    "identifier"  shift, and go to state 332
+    $default  reduce using rule 199 (cls_attr_more)
 
 
 State 300
 
-  198 cls_attr_more: ';' •
+  202 cls_attr_sign: opt_assignment $@24 cls_attr_more •
 
-    $default  reduce using rule 198 (cls_attr_more)
+    $default  reduce using rule 202 (cls_attr_sign)
 
 
 State 301
-
-  201 cls_attr_sign: opt_assignment $@23 cls_attr_more •
-
-    $default  reduce using rule 201 (cls_attr_sign)
-
-
-State 302
 
   135 var_declaration_body: "identifier" $@10 opt_array_type • $@11 opt_assignment
 
     $default  reduce using rule 134 ($@11)
 
-    $@11  go to state 333
+    $@11  go to state 332
 
 
-State 303
+State 302
 
    98 statement_s1: '.' "identifier" $@5 • statement_s1
 
@@ -4063,65 +4058,65 @@ State 303
     binary_operator          go to state 207
     unary_special_operator   go to state 208
     assignment_operator      go to state 209
-    statement_s1             go to state 334
+    statement_s1             go to state 333
     var_declaration_body     go to state 211
     var_declarations         go to state 212
     assignment               go to state 213
 
 
-State 304
+State 303
 
    99 statement_s1: '[' expression ']' • opt_array statement_s2
 
-    '['  shift, and go to state 290
+    '['  shift, and go to state 289
 
     $default  reduce using rule 13 (opt_array)
 
-    opt_array  go to state 335
+    opt_array  go to state 334
 
 
-State 305
+State 304
 
   103 statement_s1: '(' $@6 args • $@7 ')' opt_array statement_s2
 
     $default  reduce using rule 102 ($@7)
 
-    $@7  go to state 336
+    $@7  go to state 335
 
 
-State 306
+State 305
 
   141 assignment: assignment_operator $@13 expression •
 
     $default  reduce using rule 141 (assignment)
 
 
-State 307
+State 306
 
   136 var_declarations: var_declarations ',' var_declaration_body •
 
     $default  reduce using rule 136 (var_declarations)
 
 
-State 308
+State 307
 
    62 opt_string_access: '.' var_fn •
 
     $default  reduce using rule 62 (opt_string_access)
 
 
-State 309
+State 308
 
    78 unary_expression: opt_unary_operator '(' disjunctive_expression ')' • opt_array
 
-    '['  shift, and go to state 290
+    '['  shift, and go to state 289
 
     $default  reduce using rule 13 (opt_array)
 
-    opt_array  go to state 337
+    opt_array  go to state 336
 
 
-State 310
+State 309
 
    50 fn_call: var $@2 '(' • args ')' $@3 opt_array
 
@@ -4136,7 +4131,7 @@ State 310
 
     unary_operator             go to state 132
     opt_unary_operator         go to state 133
-    expression                 go to state 250
+    expression                 go to state 249
     unary_expression           go to state 135
     multiplicative_expression  go to state 136
     additive_expression        go to state 137
@@ -4144,45 +4139,45 @@ State 310
     equality_expression        go to state 139
     conjunctive_expression     go to state 140
     disjunctive_expression     go to state 141
-    new_expression             go to state 251
-    assignable_expression      go to state 287
-    obligatory_args            go to state 288
-    args                       go to state 338
+    new_expression             go to state 250
+    assignable_expression      go to state 286
+    obligatory_args            go to state 287
+    args                       go to state 337
 
 
-State 311
+State 310
 
    51 opt_var_fn_access: '.' var_fn •
 
     $default  reduce using rule 51 (opt_var_fn_access)
 
 
-State 312
+State 311
 
   161 conditional_body: statement •
 
     $default  reduce using rule 161 (conditional_body)
 
 
-State 313
+State 312
 
   162 conditional_body: block •
 
     $default  reduce using rule 162 (conditional_body)
 
 
-State 314
+State 313
 
   168 if_statement: "if" '(' error ')' conditional_body • opt_else_statement
 
-    "else"  shift, and go to state 339
+    "else"  shift, and go to state 338
 
     $default  reduce using rule 164 (opt_else_statement)
 
-    opt_else_statement  go to state 340
+    opt_else_statement  go to state 339
 
 
-State 315
+State 314
 
   167 if_statement: "if" '(' condition ')' $@14 • conditional_body $@15 opt_else_statement
 
@@ -4204,9 +4199,9 @@ State 315
     unary_special_operator  go to state 108
     statement_s0            go to state 109
     new_expression          go to state 110
-    statement               go to state 312
-    block                   go to state 313
-    conditional_body        go to state 341
+    statement               go to state 311
+    block                   go to state 312
+    conditional_body        go to state 340
     if_statement            go to state 115
     for_statement           go to state 116
     while_statement         go to state 117
@@ -4216,52 +4211,37 @@ State 315
     opening_bracket         go to state 83
 
 
+State 315
+
+  139 statement_declarative: type $@12 • var_declarations
+
+    "identifier"  shift, and go to state 164
+
+    var_declaration_body  go to state 211
+    var_declarations      go to state 341
+
+
 State 316
 
-  136 var_declarations: var_declarations • ',' var_declaration_body
-  139 statement_declarative: type $@12 var_declarations •
+  175 for_statement: "for" $@16 '(' statement_declarative ';' • $@17 condition ';' $@18 for_updating_statement ')' $@19 conditional_body
 
-    ','  shift, and go to state 265
+    $default  reduce using rule 172 ($@17)
 
-    $default  reduce using rule 139 (statement_declarative)
+    $@17  go to state 342
 
 
 State 317
 
-  174 for_statement: "for" '(' statement_declarative ';' $@16 • condition ';' $@17 for_updating_statement ')' $@18 conditional_body
+  178 while_statement: "while" $@20 '(' condition ')' • $@21 conditional_body
 
-    '-'  shift, and go to state 128
-    '+'  shift, and go to state 129
-    '!'  shift, and go to state 130
-    '~'  shift, and go to state 131
+    $default  reduce using rule 177 ($@21)
 
-    $default  reduce using rule 45 (opt_unary_operator)
-
-    unary_operator             go to state 132
-    opt_unary_operator         go to state 133
-    expression                 go to state 233
-    unary_expression           go to state 135
-    multiplicative_expression  go to state 136
-    additive_expression        go to state 137
-    relational_expression      go to state 138
-    equality_expression        go to state 139
-    conjunctive_expression     go to state 140
-    disjunctive_expression     go to state 141
-    condition                  go to state 342
+    $@21  go to state 343
 
 
 State 318
 
-  177 while_statement: "while" $@19 '(' condition ')' • $@20 conditional_body
-
-    $default  reduce using rule 176 ($@20)
-
-    $@20  go to state 343
-
-
-State 319
-
-  179 do_while_statement: "do" $@21 block "while" '(' • condition ')' ';'
+  180 do_while_statement: "do" $@22 block "while" '(' • condition ')' ';'
 
     '-'  shift, and go to state 128
     '+'  shift, and go to state 129
@@ -4283,21 +4263,21 @@ State 319
     condition                  go to state 344
 
 
-State 320
+State 319
 
-  180 switch_statement: "switch" '(' condition ')' '{' • switch_body '}'
+  181 switch_statement: "switch" '(' condition ')' '{' • switch_body '}'
 
     "case"     shift, and go to state 345
     "default"  shift, and go to state 346
 
-    $default  reduce using rule 189 (switch_body)
+    $default  reduce using rule 190 (switch_body)
 
     switch_label  go to state 347
     case_block    go to state 348
     switch_body   go to state 349
 
 
-State 321
+State 320
 
   116 new_initialisation: "[]" opt_array_type '{' • args '}'
 
@@ -4312,7 +4292,7 @@ State 321
 
     unary_operator             go to state 132
     opt_unary_operator         go to state 133
-    expression                 go to state 250
+    expression                 go to state 249
     unary_expression           go to state 135
     multiplicative_expression  go to state 136
     additive_expression        go to state 137
@@ -4320,45 +4300,45 @@ State 321
     equality_expression        go to state 139
     conjunctive_expression     go to state 140
     disjunctive_expression     go to state 141
-    new_expression             go to state 251
-    assignable_expression      go to state 287
-    obligatory_args            go to state 288
+    new_expression             go to state 250
+    assignable_expression      go to state 286
+    obligatory_args            go to state 287
     args                       go to state 350
 
 
-State 322
+State 321
 
   115 new_initialisation: '[' expression ']' • opt_array opt_array_type
 
-    '['  shift, and go to state 290
+    '['  shift, and go to state 289
 
     $default  reduce using rule 13 (opt_array)
 
     opt_array  go to state 351
 
 
-State 323
+State 322
 
   121 obligatory_args: assignable_expression $@8 • ',' obligatory_args
 
     ','  shift, and go to state 352
 
 
-State 324
+State 323
 
   114 new_initialisation: '(' args ')' •
 
     $default  reduce using rule 114 (new_initialisation)
 
 
-State 325
+State 324
 
    12 opt_array: '[' expression • ']' opt_array
 
     ']'  shift, and go to state 353
 
 
-State 326
+State 325
 
     4 opt_var_access: '.' • var
 
@@ -4367,14 +4347,14 @@ State 326
     var  go to state 354
 
 
-State 327
+State 326
 
     7 var: "identifier" $@1 opt_array opt_var_access •
 
     $default  reduce using rule 7 (var)
 
 
-State 328
+State 327
 
   127 obligatory_formal_args: type "identifier" opt_array_type • $@9 ',' obligatory_formal_args
   128                       | type "identifier" opt_array_type • opt_variadic
@@ -4388,39 +4368,39 @@ State 328
     $@9           go to state 357
 
 
+State 328
+
+  206 cls_attr_sign: '(' error ')' block •
+
+    $default  reduce using rule 206 (cls_attr_sign)
+
+
 State 329
 
-  205 cls_attr_sign: '(' error ')' block •
+  205 cls_attr_sign: '(' $@25 formal_args ')' • $@26 block
 
-    $default  reduce using rule 205 (cls_attr_sign)
+    $default  reduce using rule 204 ($@26)
+
+    $@26  go to state 358
 
 
 State 330
 
-  204 cls_attr_sign: '(' $@24 formal_args ')' • $@25 block
+  200 cls_attr_more: error ';' •
 
-    $default  reduce using rule 203 ($@25)
-
-    $@25  go to state 358
+    $default  reduce using rule 200 (cls_attr_more)
 
 
 State 331
 
-  199 cls_attr_more: error ';' •
+  198 cls_attr_more: ',' "identifier" • $@23 opt_assignment cls_attr_more
 
-    $default  reduce using rule 199 (cls_attr_more)
+    $default  reduce using rule 197 ($@23)
+
+    $@23  go to state 359
 
 
 State 332
-
-  197 cls_attr_more: ',' "identifier" • $@22 opt_assignment cls_attr_more
-
-    $default  reduce using rule 196 ($@22)
-
-    $@22  go to state 359
-
-
-State 333
 
   135 var_declaration_body: "identifier" $@10 opt_array_type $@11 • opt_assignment
 
@@ -4431,14 +4411,14 @@ State 333
     opt_assignment  go to state 360
 
 
-State 334
+State 333
 
    98 statement_s1: '.' "identifier" $@5 statement_s1 •
 
     $default  reduce using rule 98 (statement_s1)
 
 
-State 335
+State 334
 
    99 statement_s1: '[' expression ']' opt_array • statement_s2
 
@@ -4491,28 +4471,28 @@ State 335
     assignment               go to state 365
 
 
-State 336
+State 335
 
   103 statement_s1: '(' $@6 args $@7 • ')' opt_array statement_s2
 
     ')'  shift, and go to state 366
 
 
-State 337
+State 336
 
    78 unary_expression: opt_unary_operator '(' disjunctive_expression ')' opt_array •
 
     $default  reduce using rule 78 (unary_expression)
 
 
-State 338
+State 337
 
    50 fn_call: var $@2 '(' args • ')' $@3 opt_array
 
     ')'  shift, and go to state 367
 
 
-State 339
+State 338
 
   163 opt_else_statement: "else" • conditional_body
 
@@ -4534,8 +4514,8 @@ State 339
     unary_special_operator  go to state 108
     statement_s0            go to state 109
     new_expression          go to state 110
-    statement               go to state 312
-    block                   go to state 313
+    statement               go to state 311
+    block                   go to state 312
     conditional_body        go to state 368
     if_statement            go to state 115
     for_statement           go to state 116
@@ -4546,14 +4526,14 @@ State 339
     opening_bracket         go to state 83
 
 
-State 340
+State 339
 
   168 if_statement: "if" '(' error ')' conditional_body opt_else_statement •
 
     $default  reduce using rule 168 (if_statement)
 
 
-State 341
+State 340
 
   167 if_statement: "if" '(' condition ')' $@14 conditional_body • $@15 opt_else_statement
 
@@ -4562,16 +4542,43 @@ State 341
     $@15  go to state 369
 
 
+State 341
+
+  136 var_declarations: var_declarations • ',' var_declaration_body
+  139 statement_declarative: type $@12 var_declarations •
+
+    ','  shift, and go to state 264
+
+    $default  reduce using rule 139 (statement_declarative)
+
+
 State 342
 
-  174 for_statement: "for" '(' statement_declarative ';' $@16 condition • ';' $@17 for_updating_statement ')' $@18 conditional_body
+  175 for_statement: "for" $@16 '(' statement_declarative ';' $@17 • condition ';' $@18 for_updating_statement ')' $@19 conditional_body
 
-    ';'  shift, and go to state 370
+    '-'  shift, and go to state 128
+    '+'  shift, and go to state 129
+    '!'  shift, and go to state 130
+    '~'  shift, and go to state 131
+
+    $default  reduce using rule 45 (opt_unary_operator)
+
+    unary_operator             go to state 132
+    opt_unary_operator         go to state 133
+    expression                 go to state 233
+    unary_expression           go to state 135
+    multiplicative_expression  go to state 136
+    additive_expression        go to state 137
+    relational_expression      go to state 138
+    equality_expression        go to state 139
+    conjunctive_expression     go to state 140
+    disjunctive_expression     go to state 141
+    condition                  go to state 370
 
 
 State 343
 
-  177 while_statement: "while" $@19 '(' condition ')' $@20 • conditional_body
+  178 while_statement: "while" $@20 '(' condition ')' $@21 • conditional_body
 
     error         shift, and go to state 95
     "identifier"  shift, and go to state 96
@@ -4591,8 +4598,8 @@ State 343
     unary_special_operator  go to state 108
     statement_s0            go to state 109
     new_expression          go to state 110
-    statement               go to state 312
-    block                   go to state 313
+    statement               go to state 311
+    block                   go to state 312
     conditional_body        go to state 371
     if_statement            go to state 115
     for_statement           go to state 116
@@ -4605,14 +4612,14 @@ State 343
 
 State 344
 
-  179 do_while_statement: "do" $@21 block "while" '(' condition • ')' ';'
+  180 do_while_statement: "do" $@22 block "while" '(' condition • ')' ';'
 
     ')'  shift, and go to state 372
 
 
 State 345
 
-  185 switch_label: "case" • case_val
+  186 switch_label: "case" • case_val
 
     CHARACTER  shift, and go to state 373
     INTEGER    shift, and go to state 374
@@ -4624,26 +4631,26 @@ State 345
 
 State 346
 
-  186 switch_label: "default" •
+  187 switch_label: "default" •
 
-    $default  reduce using rule 186 (switch_label)
+    $default  reduce using rule 187 (switch_label)
 
 
 State 347
 
-  187 case_block: switch_label • ':' opt_statement_seq
+  188 case_block: switch_label • ':' opt_statement_seq
 
     ':'  shift, and go to state 378
 
 
 State 348
 
-  188 switch_body: case_block • switch_body
+  189 switch_body: case_block • switch_body
 
     "case"     shift, and go to state 345
     "default"  shift, and go to state 346
 
-    $default  reduce using rule 189 (switch_body)
+    $default  reduce using rule 190 (switch_body)
 
     switch_label  go to state 347
     case_block    go to state 348
@@ -4652,7 +4659,7 @@ State 348
 
 State 349
 
-  180 switch_statement: "switch" '(' condition ')' '{' switch_body • '}'
+  181 switch_statement: "switch" '(' condition ')' '{' switch_body • '}'
 
     '}'  shift, and go to state 380
 
@@ -4689,7 +4696,7 @@ State 352
 
     unary_operator             go to state 132
     opt_unary_operator         go to state 133
-    expression                 go to state 250
+    expression                 go to state 249
     unary_expression           go to state 135
     multiplicative_expression  go to state 136
     additive_expression        go to state 137
@@ -4697,8 +4704,8 @@ State 352
     equality_expression        go to state 139
     conjunctive_expression     go to state 140
     disjunctive_expression     go to state 141
-    new_expression             go to state 251
-    assignable_expression      go to state 287
+    new_expression             go to state 250
+    assignable_expression      go to state 286
     obligatory_args            go to state 383
 
 
@@ -4706,7 +4713,7 @@ State 353
 
    12 opt_array: '[' expression ']' • opt_array
 
-    '['  shift, and go to state 290
+    '['  shift, and go to state 289
 
     $default  reduce using rule 13 (opt_array)
 
@@ -4743,7 +4750,7 @@ State 357
 
 State 358
 
-  204 cls_attr_sign: '(' $@24 formal_args ')' $@25 • block
+  205 cls_attr_sign: '(' $@25 formal_args ')' $@26 • block
 
     '{'  shift, and go to state 58
 
@@ -4753,7 +4760,7 @@ State 358
 
 State 359
 
-  197 cls_attr_more: ',' "identifier" $@22 • opt_assignment cls_attr_more
+  198 cls_attr_more: ',' "identifier" $@23 • opt_assignment cls_attr_more
 
     '='  shift, and go to state 160
 
@@ -4836,7 +4843,7 @@ State 366
 
   103 statement_s1: '(' $@6 args $@7 ')' • opt_array statement_s2
 
-    '['  shift, and go to state 290
+    '['  shift, and go to state 289
 
     $default  reduce using rule 13 (opt_array)
 
@@ -4863,7 +4870,7 @@ State 369
 
   167 if_statement: "if" '(' condition ')' $@14 conditional_body $@15 • opt_else_statement
 
-    "else"  shift, and go to state 339
+    "else"  shift, and go to state 338
 
     $default  reduce using rule 164 (opt_else_statement)
 
@@ -4872,65 +4879,63 @@ State 369
 
 State 370
 
-  174 for_statement: "for" '(' statement_declarative ';' $@16 condition ';' • $@17 for_updating_statement ')' $@18 conditional_body
+  175 for_statement: "for" $@16 '(' statement_declarative ';' $@17 condition • ';' $@18 for_updating_statement ')' $@19 conditional_body
 
-    $default  reduce using rule 172 ($@17)
-
-    $@17  go to state 393
+    ';'  shift, and go to state 393
 
 
 State 371
 
-  177 while_statement: "while" $@19 '(' condition ')' $@20 conditional_body •
+  178 while_statement: "while" $@20 '(' condition ')' $@21 conditional_body •
 
-    $default  reduce using rule 177 (while_statement)
+    $default  reduce using rule 178 (while_statement)
 
 
 State 372
 
-  179 do_while_statement: "do" $@21 block "while" '(' condition ')' • ';'
+  180 do_while_statement: "do" $@22 block "while" '(' condition ')' • ';'
 
     ';'  shift, and go to state 394
 
 
 State 373
 
-  184 case_val: CHARACTER •
+  185 case_val: CHARACTER •
 
-    $default  reduce using rule 184 (case_val)
+    $default  reduce using rule 185 (case_val)
 
 
 State 374
 
-  181 case_val: INTEGER •
-
-    $default  reduce using rule 181 (case_val)
-
-
-State 375
-
-  182 case_val: "true" •
+  182 case_val: INTEGER •
 
     $default  reduce using rule 182 (case_val)
 
 
-State 376
+State 375
 
-  183 case_val: "false" •
+  183 case_val: "true" •
 
     $default  reduce using rule 183 (case_val)
 
 
+State 376
+
+  184 case_val: "false" •
+
+    $default  reduce using rule 184 (case_val)
+
+
 State 377
 
-  185 switch_label: "case" case_val •
+  186 switch_label: "case" case_val •
 
-    $default  reduce using rule 185 (switch_label)
+    $default  reduce using rule 186 (switch_label)
 
 
 State 378
 
-  187 case_block: switch_label ':' • opt_statement_seq
+  188 case_block: switch_label ':' • opt_statement_seq
 
     error         shift, and go to state 95
     "identifier"  shift, and go to state 96
@@ -4969,16 +4974,16 @@ State 378
 
 State 379
 
-  188 switch_body: case_block switch_body •
+  189 switch_body: case_block switch_body •
 
-    $default  reduce using rule 188 (switch_body)
+    $default  reduce using rule 189 (switch_body)
 
 
 State 380
 
-  180 switch_statement: "switch" '(' condition ')' '{' switch_body '}' •
+  181 switch_statement: "switch" '(' condition ')' '{' switch_body '}' •
 
-    $default  reduce using rule 180 (switch_statement)
+    $default  reduce using rule 181 (switch_statement)
 
 
 State 381
@@ -5016,24 +5021,24 @@ State 385
     "identifier"  shift, and go to state 5
 
     nested_id               go to state 77
-    type                    go to state 247
+    type                    go to state 246
     obligatory_formal_args  go to state 396
 
 
 State 386
 
-  204 cls_attr_sign: '(' $@24 formal_args ')' $@25 block •
+  205 cls_attr_sign: '(' $@25 formal_args ')' $@26 block •
 
-    $default  reduce using rule 204 (cls_attr_sign)
+    $default  reduce using rule 205 (cls_attr_sign)
 
 
 State 387
 
-  197 cls_attr_more: ',' "identifier" $@22 opt_assignment • cls_attr_more
+  198 cls_attr_more: ',' "identifier" $@23 opt_assignment • cls_attr_more
 
-    error  shift, and go to state 298
-    ','    shift, and go to state 299
-    ';'    shift, and go to state 300
+    error  shift, and go to state 297
+    ','    shift, and go to state 298
+    ';'    shift, and go to state 299
 
     cls_attr_more  go to state 397
 
@@ -5151,7 +5156,7 @@ State 391
 
    50 fn_call: var $@2 '(' args ')' $@3 • opt_array
 
-    '['  shift, and go to state 290
+    '['  shift, and go to state 289
 
     $default  reduce using rule 13 (opt_array)
 
@@ -5167,31 +5172,25 @@ State 392
 
 State 393
 
-  174 for_statement: "for" '(' statement_declarative ';' $@16 condition ';' $@17 • for_updating_statement ')' $@18 conditional_body
+  175 for_statement: "for" $@16 '(' statement_declarative ';' $@17 condition ';' • $@18 for_updating_statement ')' $@19 conditional_body
 
-    "identifier"  shift, and go to state 151
-    "++"          shift, and go to state 97
-    "--"          shift, and go to state 98
+    $default  reduce using rule 173 ($@18)
 
-    var                     go to state 401
-    unary_special_operator  go to state 402
-    assignment_statement    go to state 403
-    statement_pm_1          go to state 404
-    for_updating_statement  go to state 405
+    $@18  go to state 401
 
 
 State 394
 
-  179 do_while_statement: "do" $@21 block "while" '(' condition ')' ';' •
+  180 do_while_statement: "do" $@22 block "while" '(' condition ')' ';' •
 
-    $default  reduce using rule 179 (do_while_statement)
+    $default  reduce using rule 180 (do_while_statement)
 
 
 State 395
 
-  187 case_block: switch_label ':' opt_statement_seq •
+  188 case_block: switch_label ':' opt_statement_seq •
 
-    $default  reduce using rule 187 (case_block)
+    $default  reduce using rule 188 (case_block)
 
 
 State 396
@@ -5203,9 +5202,9 @@ State 396
 
 State 397
 
-  197 cls_attr_more: ',' "identifier" $@22 opt_assignment cls_attr_more •
+  198 cls_attr_more: ',' "identifier" $@23 opt_assignment cls_attr_more •
 
-    $default  reduce using rule 197 (cls_attr_more)
+    $default  reduce using rule 198 (cls_attr_more)
 
 
 State 398
@@ -5231,6 +5230,21 @@ State 400
 
 State 401
 
+  175 for_statement: "for" $@16 '(' statement_declarative ';' $@17 condition ';' $@18 • for_updating_statement ')' $@19 conditional_body
+
+    "identifier"  shift, and go to state 151
+    "++"          shift, and go to state 97
+    "--"          shift, and go to state 98
+
+    var                     go to state 402
+    unary_special_operator  go to state 403
+    assignment_statement    go to state 404
+    statement_pm_1          go to state 405
+    for_updating_statement  go to state 406
+
+
+State 402
+
   143 assignment_statement: var • assignment
   145 statement_pm_1: var • unary_special_operator
 
@@ -5249,74 +5263,74 @@ State 401
     SELF_BITWISE_XOR           shift, and go to state 185
     '='                        shift, and go to state 196
 
-    unary_special_operator  go to state 406
+    unary_special_operator  go to state 407
     assignment_operator     go to state 209
-    assignment              go to state 407
+    assignment              go to state 408
 
 
-State 402
+State 403
 
   144 statement_pm_1: unary_special_operator • var
 
     "identifier"  shift, and go to state 151
 
-    var  go to state 408
+    var  go to state 409
 
 
-State 403
+State 404
 
   170 for_updating_statement: assignment_statement •
 
     $default  reduce using rule 170 (for_updating_statement)
 
 
-State 404
+State 405
 
   169 for_updating_statement: statement_pm_1 •
 
     $default  reduce using rule 169 (for_updating_statement)
 
 
-State 405
-
-  174 for_statement: "for" '(' statement_declarative ';' $@16 condition ';' $@17 for_updating_statement • ')' $@18 conditional_body
-
-    ')'  shift, and go to state 409
-
-
 State 406
+
+  175 for_statement: "for" $@16 '(' statement_declarative ';' $@17 condition ';' $@18 for_updating_statement • ')' $@19 conditional_body
+
+    ')'  shift, and go to state 410
+
+
+State 407
 
   145 statement_pm_1: var unary_special_operator •
 
     $default  reduce using rule 145 (statement_pm_1)
 
 
-State 407
+State 408
 
   143 assignment_statement: var assignment •
 
     $default  reduce using rule 143 (assignment_statement)
 
 
-State 408
+State 409
 
   144 statement_pm_1: unary_special_operator var •
 
     $default  reduce using rule 144 (statement_pm_1)
 
 
-State 409
-
-  174 for_statement: "for" '(' statement_declarative ';' $@16 condition ';' $@17 for_updating_statement ')' • $@18 conditional_body
-
-    $default  reduce using rule 173 ($@18)
-
-    $@18  go to state 410
-
-
 State 410
 
-  174 for_statement: "for" '(' statement_declarative ';' $@16 condition ';' $@17 for_updating_statement ')' $@18 • conditional_body
+  175 for_statement: "for" $@16 '(' statement_declarative ';' $@17 condition ';' $@18 for_updating_statement ')' • $@19 conditional_body
+
+    $default  reduce using rule 174 ($@19)
+
+    $@19  go to state 411
+
+
+State 411
+
+  175 for_statement: "for" $@16 '(' statement_declarative ';' $@17 condition ';' $@18 for_updating_statement ')' $@19 • conditional_body
 
     error         shift, and go to state 95
     "identifier"  shift, and go to state 96
@@ -5336,9 +5350,9 @@ State 410
     unary_special_operator  go to state 108
     statement_s0            go to state 109
     new_expression          go to state 110
-    statement               go to state 312
-    block                   go to state 313
-    conditional_body        go to state 411
+    statement               go to state 311
+    block                   go to state 312
+    conditional_body        go to state 412
     if_statement            go to state 115
     for_statement           go to state 116
     while_statement         go to state 117
@@ -5348,8 +5362,8 @@ State 410
     opening_bracket         go to state 83
 
 
-State 411
+State 412
 
-  174 for_statement: "for" '(' statement_declarative ';' $@16 condition ';' $@17 for_updating_statement ')' $@18 conditional_body •
+  175 for_statement: "for" $@16 '(' statement_declarative ';' $@17 condition ';' $@18 for_updating_statement ')' $@19 conditional_body •
 
-    $default  reduce using rule 174 (for_statement)
+    $default  reduce using rule 175 (for_statement)

@@ -71,7 +71,7 @@ struct scope {
     void add_symbol(const std::string &name,const symbol_entry &symbol);
     void pop_back();
     void remove_top();
-
+    scope::alignment& at(int pos);
     symbol_entry& at(const std::string &name);
     std::pair<std::reference_wrapper<symbol_entry>,int> getAlignment(const std::string &name);
 };

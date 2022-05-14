@@ -40,7 +40,7 @@ namespace javacompiler {
         if(I==-1)
             throw std::logic_error("Variable " + name + " is not found on the table");
         auto pos = semantics->symbol_table.at(I).symbols[name].pos;
-        auto offset = semantics->symbol_table.at(I).symbolsAlignment[pos].offset;
+        auto offset = semantics->symbol_table.at(I).at(pos).offset;
         return offset;
     }
 

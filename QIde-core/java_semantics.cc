@@ -1,6 +1,7 @@
 #include <functional>
 #include <sstream>
 #include "java_semantics.hh"
+#include "ranges"
 
 namespace javacompiler {
 
@@ -51,8 +52,21 @@ namespace javacompiler {
         if(symbol_table.empty())
             symbol_table.emplace_back();
         else {
-            int offset=scopeType==scope_type::ANONYMOUS;
-            symbol_table.emplace_back(offset?symbol_table.back().symbolsAlignment.back().offset:0);
+            if(scopeType==scope_type::FUNCTION)
+            {
+                const auto &args=symbol_table.back().symbols.at(current_method).args;
+                symbol_table.emplace_back(-args.size());
+                for(auto it=args.rbegin();it!=args.rend();++it)
+                {
+                    const auto &[name,type]=*it;
+                    symbol_entry entry;
+                    entry.is_used=false;
+                    entry.is_initialized=true;
+                    entry.type=type;
+                    add_symbol(name,entry);
+                }
+            }
+            else symbol_table.emplace_back(symbol_table.back().symbolsAlignment.empty()?symbol_table.back().offset:symbol_table.back().symbolsAlignment.back().offset+1);
         }
         scopeType=scope_type::ANONYMOUS;
     }
@@ -62,7 +76,7 @@ namespace javacompiler {
 
         // We don't check the global scope for usage
         if (this->symbol_table.size() > 1) {
-            for (auto& it: this->symbol_table[this->symbol_table.size()-1].symbols) {
+            for (auto& it: this->symbol_table.back().symbols) {
                 if (!it.second.is_used) {
                     this->warning(errorHandler->highlight(it.first) + " is declared but its value is never used");
                 }
@@ -292,5 +306,21 @@ namespace javacompiler {
     std::pair<std::reference_wrapper<symbol_entry>,int> scope::getAlignment(const std::string &name) {
         auto & R=symbols.at(name);
         return std::make_pair(std::ref(R),symbolsAlignment[R.pos].offset);
+    }
+
+    scope::alignment& scope::at(int pos) {
+        return symbolsAlignment[pos];
+    }
+
+    symbol_entry &scope::at(const std::string &name) {
+        return symbols.at(name);
+    }
+
+    void scope::add_symbol(const std::string &name, const symbol_entry &symbol) {
+        push_back(name,symbol);
+    }
+
+    void scope::remove_top() {
+        pop_back();
     }
 } // namespace javacompiler

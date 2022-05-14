@@ -644,14 +644,18 @@ if_statement: IF '(' condition ')' {
     driver.codeGenerator->setOperand(alt_address-1,driver.codeGenerator->currentInstructionOffset());
 } | IF '(' error ')' conditional_body opt_else_statement;
 for_updating_statement: statement_pm_1 | assignment_statement
-for_statement: FOR '(' statement_declarative ';'{
+for_statement: FOR {
+    driver.semantics->scopeType=scope_type::ANONYMOUS;
+    driver.semantics->add_scope();
+} '(' statement_declarative ';'{
     driver.semantics->current_address.push_back(driver.codeGenerator->currentInstructionOffset());
 } condition ';' {
     driver.semantics->current_address.push_back(driver.codeGenerator->addInstruction(javacompiler::Opcode::JMP_Z, 0));
     auto branch= driver.codeGenerator->createBranch();
     driver.codeGenerator->branchesStack.push_back({branch});
     driver.codeGenerator->setDefaultBranch(branch);
-}for_updating_statement ')' {driver.codeGenerator->setDefaultBranch("main");} conditional_body {
+}for_updating_statement ')' {driver.codeGenerator->setDefaultBranch("main");} conditional_body  {
+    driver.semantics->free_scope();
     const auto& branchList=driver.codeGenerator->branchesStack.back();
     driver.codeGenerator->combineBranches(branchList);
     int jmp_address=driver.semantics->current_address.back();
@@ -720,7 +724,7 @@ cls_attr_sign: opt_assignment  {
         driver.codeGenerator->addFunctionEntry(driver.semantics->current_symbol);
         driver.semantics->reset_current_symbol();
     }
-    formal_args ')' { driver.semantics->current_method.clear();
+    formal_args ')' { 
         driver.semantics->scopeType = scope_type::FUNCTION;
     }
     block {
@@ -757,6 +761,7 @@ opt_implements: IMPLEMENTS interface_list|;
 opening_bracket: '{' {
         // std::cout<<"Adding new scope"<<std::endl;
         driver.semantics->add_scope();
+        driver.semantics->current_method.clear();
     };
 
 closing_bracket: '}' {
