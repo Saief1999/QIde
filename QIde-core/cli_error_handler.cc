@@ -5,6 +5,14 @@ namespace javacompiler {
             std::cerr << BOLDWHITE << l << ": " << RESET << msg << std::endl;
         }
 
+
+        void CliErrorHandler::error(const std::string& msg) {
+            std::cerr<< BOLDRED << "error: "<<RESET;
+            std::cerr<<msg<<std::endl;
+
+            throw std::runtime_error("error");
+        }
+
         void CliErrorHandler::error(const location& l, const std::string& msg) {
             std::cerr<< BOLDWHITE << l << ": " << RESET;
             std::cerr<< BOLDRED << "error: "<<RESET;

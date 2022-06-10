@@ -10,7 +10,7 @@
 #include "opcode.hh"
 #include "instruction.hh"
 #include <map>
-
+#include "error_handler.hh"
 namespace javacompiler
 {
 
@@ -20,7 +20,8 @@ namespace javacompiler
      * @param semantics The JavaSemantics used to get additional information.
      * */
     class CodeGenerator {
-        JavaSemantics * semantics;
+        JavaSemantics* semantics;
+        ErrorHandler* errorHandler;
         /**
          * @brief The instructions map.
          * @details The instructions map is a vector of instructions vectors. Each vector element is a list of instructions.

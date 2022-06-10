@@ -10,6 +10,19 @@ namespace javacompiler {
             textEdit->insertHtml(message);
         }
 
+
+        void GuiErrorHandler::error(const std::string& msg) {
+            std::stringstream stream;
+
+            stream << "<span style='color:darkred;'><b>error:</b></span> ";
+            stream <<msg << "<br>";
+
+            QString message = QString::fromStdString(stream.str());
+            textEdit->insertHtml(message);
+
+            throw std::runtime_error("error");
+        }
+
         void GuiErrorHandler::error(const location& l, const std::string& msg) {
             std::stringstream stream;
 

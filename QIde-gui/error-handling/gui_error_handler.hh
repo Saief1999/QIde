@@ -15,6 +15,7 @@ namespace javacompiler {
         QTextEdit* textEdit;
     public:
         void syntax_error(const location& l, const std::string& msg);
+        void error(const std::string& msg);
         void error(const location& l, const std::string& msg);
         void warning(const location& l, const std::string& msg);
         std::string highlight(const std::string& identifier);

@@ -31,18 +31,10 @@ namespace javacompiler {
     }
 
     void JavaSemantics::throw_error(const std::string& msg) {
-        // std::cerr<< BOLDWHITE << *current_location << ": " << RESET;
-        // std::cerr<< BOLDRED << "error: "<<RESET;
-        // std::cerr<<msg<<std::endl;
-
-        // throw std::runtime_error("error");
         this->errorHandler->error(*this->current_location, msg);
     }
 
     void JavaSemantics::warning(const std::string& msg) {
-        // std::cout<< BOLDWHITE << *current_location << ": " << RESET;
-        // std::cout<< BOLDMAGENTA <<"warning: "<<RESET;
-        // std::cout<<msg<<std::endl;
         this->errorHandler->warning(*this->current_location, msg);
     } 
 
@@ -111,9 +103,6 @@ namespace javacompiler {
 
 
     void JavaSemantics::add_symbol(std::string name, symbol_entry symbol) {
-
-        // std::cout<< "Adding new symbol with name " << name << std::endl;
-
         // if we only have the global scope currently , then we need to check it for possible redefinition
         bool search_global = (this->symbol_table.size() == 1);
         if (this->find_symbol(name, search_global) != -1) {
@@ -122,7 +111,6 @@ namespace javacompiler {
         }
         symbol.pos=symbol_table.back().symbols.size();
         this->symbol_table.back().push_back(name,symbol);
-        //std::cout << symbol_table.back().getAlignment(name).second << ' ' << std::flush;
     }
 
 
@@ -206,15 +194,10 @@ namespace javacompiler {
 
 
     void JavaSemantics::add_arg_to_current(std::string name, std::string type) {
-
-        // std::cout<<"Adding new arg " << name <<" of type " << type <<std::endl;
-        // std::cout << "current method is "<<current_method<<std::endl;
         scope current_scope = this->symbol_table.back();
 
         std::deque<argument> args = current_scope.symbols.at(current_method).args;
-        // std::cout <<"current number of args is" << args.size()<<std::endl;
         for ( auto& it:args) {
-            // std::cout << "Current iteration is on" << it.name<<std::endl;
             if (it.name.compare(name) == 0) {
                 this->throw_error("argument with name " + errorHandler->highlight(name) + " already used");
             }

@@ -7,6 +7,7 @@
 
 namespace javacompiler {
     CodeGenerator::CodeGenerator(JavaSemantics &semantics):semantics(&semantics),instructionsMap(1),instructions(instructionsMap.front()) {
+        this->errorHandler = semantics.errorHandler;
         for(const auto &fn:semantics.definitions)
             fn_offset.emplace(fn,-1-fn_offset.size());
         addInstruction(Opcode::MAIN,0);
@@ -38,7 +39,8 @@ namespace javacompiler {
     {
         auto I=semantics->indexOf(name);
         if(I==-1)
-            throw std::logic_error("Variable " + name + " is not found on the table");
+            this->errorHandler->error("Variable '" + name + "' could not be found while generating code");
+            // throw std::logic_error("Variable '" + name + "' is not found on the table");
         auto pos = semantics->symbol_table.at(I).symbols[name].pos;
         auto offset = semantics->symbol_table.at(I).at(pos).offset;
         return offset;
@@ -54,7 +56,8 @@ namespace javacompiler {
 
     std::string CodeGenerator::generateCode() const {
         if(main_offset==0)
-            throw std::logic_error("Main function is not defined");
+            this->errorHandler->error("'main' function is not defined");
+            // throw std::logic_error("Main function is not defined");
         std::stringstream  S;
         for(const auto &insPtr:instructionsMap.front())
             S << to_string(*insPtr) << '\n';

@@ -10,6 +10,7 @@ namespace javacompiler {
     public:
         virtual void syntax_error(const location& l, const std::string& msg)=0;
         virtual void error(const location& l, const std::string& msg)=0;
+        virtual void error(const std::string& msg)=0;
         virtual void warning(const location& l, const std::string& msg)=0;
 
         /**
