@@ -192,7 +192,7 @@
 
 #include "driver.hh"
 #include "java_lexer.hh"
-#include "CodeGenerator.hh"
+#include "code_generator.hh"
 #include "opcode.hh"
 
 /* this "connects" the bison parser in the driver to the flex scanner class

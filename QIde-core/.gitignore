@@ -4,3 +4,4 @@ java_parser.cc
 java_parser.hh
 java_lexer.cc
 location.hh
+java_parser.output

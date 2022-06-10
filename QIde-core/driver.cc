@@ -4,7 +4,7 @@
 #include "driver.hh"
 #include "java_lexer.hh"
 #include "utils.hh"
-#include "CodeGenerator.hh"
+#include "code_generator.hh"
 
 /** The javacompiler namespace is used to encapsulate the three parser classes
  * javacompiler::Parser, javacompiler::Scanner and javacompiler::Driver */

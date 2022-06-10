@@ -3,7 +3,7 @@
 //
 
 #include <sstream>
-#include "CodeGenerator.hh"
+#include "code_generator.hh"
 
 namespace javacompiler {
     CodeGenerator::CodeGenerator(JavaSemantics &semantics):semantics(&semantics),instructionsMap(1),instructions(instructionsMap.front()) {

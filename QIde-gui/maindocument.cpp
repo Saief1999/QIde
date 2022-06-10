@@ -1,6 +1,6 @@
 #include "maindocument.h"
-#include "syntax/JavaHighlighter.h"
-#include "LineNumberArea.h"
+#include "syntax/java_highlighter.h"
+#include "linenumberarea.h"
 
 MainDocument::MainDocument(QWidget *parent,bool fromOne)
     : QPlainTextEdit{parent},title(""),path("")

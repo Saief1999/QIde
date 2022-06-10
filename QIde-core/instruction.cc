@@ -4,7 +4,7 @@
 
 #include <string>
 #include <sstream>
-#include "Instruction.hh"
+#include "instruction.hh"
 
 namespace javacompiler
 {

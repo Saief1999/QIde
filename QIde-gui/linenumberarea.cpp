@@ -2,7 +2,7 @@
 // Created by ramizouari on 11/05/22.
 //
 
-#include "LineNumberArea.h"
+#include "linenumberarea.h"
 
 LineNumberArea::LineNumberArea(MainDocument *editor,int offset) : QWidget(editor), codeEditor(editor)
 {}

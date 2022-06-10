@@ -3,7 +3,7 @@
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
-#include "syntax/JavaHighlighter.h"
+#include "syntax/java_highlighter.h"
 
 int main(int argc, char *argv[])
 {

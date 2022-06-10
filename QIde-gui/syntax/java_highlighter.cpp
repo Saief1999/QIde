@@ -3,7 +3,7 @@
 //
 
 #include <QSyntaxHighlighter>
-#include "JavaHighlighter.h"
+#include "java_highlighter.h"
 #include <istream>
 #include <fstream>
 

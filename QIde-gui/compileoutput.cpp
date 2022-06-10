@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include "error-handling/gui_error_handler.hh"
-#include "QIde-core/CodeGenerator.hh"
+#include "QIde-core/code_generator.hh"
 #include "maindocument.h"
 
 //extern "C"

@@ -8,7 +8,7 @@
 #include <memory>
 #include "java_semantics.hh"
 #include "opcode.hh"
-#include "Instruction.hh"
+#include "instruction.hh"
 #include <map>
 
 namespace javacompiler

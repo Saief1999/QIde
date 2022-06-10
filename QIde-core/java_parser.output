@@ -33,9 +33,9 @@ Grammar
     3          | "identifier"
 
     4 opt_var_access: '.' var
-    5               | %empty
+    5               | ε
 
-    6 $@1: %empty
+    6 $@1: ε
 
     7 var: "identifier" $@1 opt_array opt_var_access
 
@@ -44,10 +44,10 @@ Grammar
     9 type: nested_id opt_array_type
 
    10 opt_array_type: "[]" opt_array_type
-   11               | %empty
+   11               | ε
 
    12 opt_array: '[' expression ']' opt_array
-   13          | %empty
+   13          | ε
 
    14 equality_operator: "=="
    15                  | "!="
@@ -89,19 +89,19 @@ Grammar
    43               | '~'
 
    44 opt_unary_operator: unary_operator
-   45                   | %empty
+   45                   | ε
 
    46 unary_special_operator: "++"
    47                       | "--"
 
-   48 $@2: %empty
+   48 $@2: ε
 
-   49 $@3: %empty
+   49 $@3: ε
 
    50 fn_call: var $@2 '(' args ')' $@3 opt_array
 
    51 opt_var_fn_access: '.' var_fn
-   52                  | %empty
+   52                  | ε
 
    53 var_fn: var_load
    54       | fn_call opt_var_fn_access
@@ -115,7 +115,7 @@ Grammar
    61    | "string" opt_string_access
 
    62 opt_string_access: '.' var_fn
-   63                  | %empty
+   63                  | ε
 
    64 assignment_operator: '='
    65                    | SELF_UNSIGNED_RIGHT_SHIFT
@@ -153,7 +153,7 @@ Grammar
    89 disjunctive_expression: disjunctive_expression "||" conjunctive_expression
    90                       | conjunctive_expression
 
-   91 $@4: %empty
+   91 $@4: ε
 
    92 statement_s0: "identifier" $@4 statement_s1
    93             | '(' expression ')' opt_array
@@ -162,28 +162,28 @@ Grammar
 
    96 statement_s1: var_declarations
 
-   97 $@5: %empty
+   97 $@5: ε
 
    98 statement_s1: '.' "identifier" $@5 statement_s1
    99             | '[' expression ']' opt_array statement_s2
   100             | "[]" var_declarations
 
-  101 $@6: %empty
+  101 $@6: ε
 
-  102 $@7: %empty
+  102 $@7: ε
 
   103 statement_s1: '(' $@6 args $@7 ')' opt_array statement_s2
   104             | assignment
   105             | binary_operator expression
   106             | unary_special_operator
-  107             | %empty
+  107             | ε
 
   108 rhs: assignment
   109    | binary_operator expression
 
   110 statement_s2: '.' val rhs
   111             | rhs
-  112             | %empty
+  112             | ε
 
   113 new_expression: "new" nested_id new_initialisation
 
@@ -196,41 +196,41 @@ Grammar
 
   119 obligatory_args: assignable_expression
 
-  120 $@8: %empty
+  120 $@8: ε
 
   121 obligatory_args: assignable_expression $@8 ',' obligatory_args
 
   122 args: obligatory_args
-  123     | %empty
+  123     | ε
 
   124 opt_variadic: ","
-  125             | %empty
+  125             | ε
 
-  126 $@9: %empty
+  126 $@9: ε
 
   127 obligatory_formal_args: type "identifier" opt_array_type $@9 ',' obligatory_formal_args
   128                       | type "identifier" opt_array_type opt_variadic
 
   129 formal_args: obligatory_formal_args
-  130            | %empty
+  130            | ε
 
   131 opt_assignment: '=' assignable_expression
-  132               | %empty
+  132               | ε
 
-  133 $@10: %empty
+  133 $@10: ε
 
-  134 $@11: %empty
+  134 $@11: ε
 
   135 var_declaration_body: "identifier" $@10 opt_array_type $@11 opt_assignment
 
   136 var_declarations: var_declarations ',' var_declaration_body
   137                 | var_declaration_body
 
-  138 $@12: %empty
+  138 $@12: ε
 
   139 statement_declarative: type $@12 var_declarations
 
-  140 $@13: %empty
+  140 $@13: ε
 
   141 assignment: assignment_operator $@13 expression
   142           | '=' new_expression
@@ -251,7 +251,7 @@ Grammar
   154          | error ';'
 
   155 opt_statement_seq: statement_seq
-  156                  | %empty
+  156                  | ε
 
   157 statement_seq: statement opt_statement_seq
   158              | block opt_statement_seq
@@ -264,11 +264,11 @@ Grammar
   162                 | block
 
   163 opt_else_statement: "else" conditional_body
-  164                   | %empty
+  164                   | ε
 
-  165 $@14: %empty
+  165 $@14: ε
 
-  166 $@15: %empty
+  166 $@15: ε
 
   167 if_statement: "if" '(' condition ')' $@14 conditional_body $@15 opt_else_statement
   168             | "if" '(' error ')' conditional_body opt_else_statement
@@ -276,23 +276,23 @@ Grammar
   169 for_updating_statement: statement_pm_1
   170                       | assignment_statement
 
-  171 $@16: %empty
+  171 $@16: ε
 
-  172 $@17: %empty
+  172 $@17: ε
 
-  173 $@18: %empty
+  173 $@18: ε
 
-  174 $@19: %empty
+  174 $@19: ε
 
   175 for_statement: "for" $@16 '(' statement_declarative ';' $@17 condition ';' $@18 for_updating_statement ')' $@19 conditional_body
 
-  176 $@20: %empty
+  176 $@20: ε
 
-  177 $@21: %empty
+  177 $@21: ε
 
   178 while_statement: "while" $@20 '(' condition ')' $@21 conditional_body
 
-  179 $@22: %empty
+  179 $@22: ε
 
   180 do_while_statement: "do" $@22 block "while" '(' condition ')' ';'
 
@@ -309,30 +309,30 @@ Grammar
   188 case_block: switch_label ':' opt_statement_seq
 
   189 switch_body: case_block switch_body
-  190            | %empty
+  190            | ε
 
   191 opt_return_expression: new_expression
   192                      | expression
-  193                      | %empty
+  193                      | ε
 
   194 return_statement: "return" opt_return_expression
 
   195 cls_modifier: PUBLIC
-  196             | %empty
+  196             | ε
 
-  197 $@23: %empty
+  197 $@23: ε
 
   198 cls_attr_more: ',' "identifier" $@23 opt_assignment cls_attr_more
   199              | ';'
   200              | error ';'
 
-  201 $@24: %empty
+  201 $@24: ε
 
   202 cls_attr_sign: opt_assignment $@24 cls_attr_more
 
-  203 $@25: %empty
+  203 $@25: ε
 
-  204 $@26: %empty
+  204 $@26: ε
 
   205 cls_attr_sign: '(' $@25 formal_args ')' $@26 block
   206              | '(' error ')' block
@@ -344,14 +344,14 @@ Grammar
   210 fn_static_modifier: "static"
 
   211 fn_opt_static_modifier: fn_static_modifier
-  212                       | %empty
+  212                       | ε
 
   213 fn_opt_access_modifier: fn_access_modifier
-  214                       | %empty
+  214                       | ε
 
   215 fn_modifier: fn_access_modifier fn_opt_static_modifier
   216            | fn_static_modifier fn_opt_access_modifier
-  217            | %empty
+  217            | ε
 
   218 fn_declaration: fn_modifier type "identifier" '(' formal_args ')'
   219               | fn_modifier type "identifier" '(' error ')'
@@ -360,28 +360,28 @@ Grammar
   221                | cls_modifier "class" error
 
   222 cls_info_opt_more: cls_info
-  223                  | %empty
+  223                  | ε
 
   224 cls_info: "abstract" fn_declaration ';' cls_info_opt_more
 
-  225 $@27: %empty
+  225 $@27: ε
 
   226 cls_info: fn_modifier type "identifier" $@27 cls_attr_sign cls_info_opt_more
   227         | ';' cls_info_opt_more
 
   228 opt_cls_info: cls_info
-  229             | %empty
+  229             | ε
 
   230 opt_extends: "extends" nested_id
-  231            | %empty
+  231            | ε
 
   232 more_interface_list: ',' interface_list
-  233                    | %empty
+  233                    | ε
 
   234 interface_list: nested_id more_interface_list
 
   235 opt_implements: "implements" interface_list
-  236               | %empty
+  236               | ε
 
   237 opening_bracket: '{'
 
@@ -391,7 +391,7 @@ Grammar
   240               | cls_declaration error '{' opt_cls_info '}'
 
   241 opt_abstract: "abstract"
-  242             | %empty
+  242             | ε
 
   243 interface_info: opt_abstract fn_declaration ';' interface_info
   244               | ';'
@@ -399,28 +399,28 @@ Grammar
   246               | error block
 
   247 opt_interface_info: interface_info
-  248                   | %empty
+  248                   | ε
 
   249 interface_declaration: cls_modifier "interface" "identifier"
   250                      | cls_modifier "interface" error
 
   251 opt_interface_extends: "extends" interface_list
-  252                      | %empty
+  252                      | ε
 
   253 interface_definition: interface_declaration opt_interface_extends '{' opt_interface_info '}'
   254                     | interface_declaration error '{' opt_interface_info '}'
 
   255 opt_pkg_declaration: "package" nested_id ';'
-  256                    | %empty
+  256                    | ε
 
   257 pkg_import: "import" nested_id ';' pkg_import
-  258           | %empty
+  258           | ε
 
   259 type_definitions: interface_definition type_definitions_more
   260                 | cls_definition type_definitions_more
 
   261 type_definitions_more: type_definitions
-  262                      | %empty
+  262                      | ε
 
   263 main_program: opt_pkg_declaration pkg_import type_definitions
 
